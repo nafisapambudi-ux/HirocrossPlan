@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HIROCROSS Plan - One File (Supabase)</title>
+  <title>HIROCROSS Plan • One File (Supabase Full)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,53 +19,63 @@
       --muted:#64748b;
       --text:#0b1220;
 
-      --sidebar-w: 280px;
-      --sidebar-collapsed: 16px;
+      --sidebar-w: 292px;
+      --sidebar-edge: 16px;
       --radius: 16px;
-      --shadow: 0 10px 30px rgba(2, 6, 23, .10);
+      --shadow: 0 10px 30px rgba(2,6,23,.10);
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
-      font-family:"Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 40%, #fff 100%);
+      font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 40%, #fff 100%);
     }
 
-    /* Hover edge */
+    /* LEFT HOVER EDGE */
     .hover-edge{
-      position:fixed; left:0; top:0; height:100vh; width: var(--sidebar-collapsed);
-      z-index: 60; background: transparent;
+      position:fixed; left:0; top:0;
+      height:100vh; width:var(--sidebar-edge);
+      z-index:50;
+      background: transparent;
     }
 
-    /* Sidebar */
+    /* SIDEBAR */
     .sidebar{
-      position:fixed; left:0; top:0; height:100vh; width: var(--sidebar-w);
-      transform: translateX(calc(-1 * (var(--sidebar-w) - var(--sidebar-collapsed))));
-      transition: transform .22s ease;
-      z-index: 70;
-      background: rgba(15,23,42,.94);
+      position:fixed; left:0; top:0;
+      height:100vh; width:var(--sidebar-w);
+      transform: translateX(calc(-1 * (var(--sidebar-w) - var(--sidebar-edge))));
+      transition: transform .18s ease;
+      z-index: 80;
+
+      background: rgba(15,23,42,.95);
       backdrop-filter: blur(10px);
       border-right: 1px solid rgba(148,163,184,.18);
       box-shadow: 10px 0 30px rgba(2,6,23,.18);
       display:flex; flex-direction:column;
     }
+
     .hover-edge:hover + .sidebar,
     .sidebar:hover,
-    body.sidebar-pinned .sidebar{ transform: translateX(0); }
+    body.sidebar-pinned .sidebar{
+      transform: translateX(0);
+    }
 
     .sidebar-header{
-      padding:18px 16px 14px 16px;
-      border-bottom: 1px solid rgba(148,163,184,.15);
       display:flex; align-items:center; gap:12px;
+      padding:18px 16px 14px;
+      border-bottom:1px solid rgba(148,163,184,.15);
     }
+
     .brand-dot{
-      width:42px; height:42px; border-radius: 14px;
+      width:42px; height:42px; border-radius:14px;
       background: radial-gradient(circle at 30% 30%, #60a5fa 0%, #2563eb 35%, #0ea5e9 100%);
       box-shadow: 0 8px 20px rgba(37,99,235,.35);
       flex:0 0 auto;
     }
+
     .brand-title{ display:flex; flex-direction:column; line-height:1.1; }
     .brand-title .name{ color:#fff; font-weight:800; letter-spacing:.2px; }
     .brand-title .sub{ color: rgba(226,232,240,.82); font-size:12px; margin-top:4px; }
@@ -73,36 +83,56 @@
     .pin-btn{
       margin-left:auto;
       border:1px solid rgba(148,163,184,.25);
-      background: rgba(2,6,23,.25);
+      background: rgba(2,6,23,.28);
       color: rgba(226,232,240,.92);
       border-radius: 12px;
       padding:8px 10px;
       cursor:pointer;
-      font-weight:700;
+      font-weight:800;
       font-size:12px;
       user-select:none;
     }
+    .pin-btn:active{ transform: scale(.99); }
 
-    .nav{ padding:14px 10px; display:flex; flex-direction:column; gap:8px; overflow:auto; }
-    .nav .group-label{
+    .nav{
+      padding:14px 10px;
+      display:flex; flex-direction:column; gap:8px;
+      overflow:auto;
+    }
+    .group-label{
       margin: 10px 10px 4px;
-      font-size:11px; letter-spacing:.12em; font-weight:800;
+      font-size:11px;
+      letter-spacing:.12em;
+      font-weight:800;
       color: rgba(148,163,184,.85);
       text-transform:uppercase;
     }
+
     .nav-btn{
-      display:flex; align-items:center; gap:10px; width:100%;
-      border:1px solid transparent; background: transparent;
+      display:flex; align-items:center; gap:10px;
+      width:100%;
+      border:1px solid transparent;
+      background: transparent;
       color: rgba(226,232,240,.92);
-      border-radius: 14px; padding:11px 12px;
-      cursor:pointer; text-align:left;
+      border-radius: 14px;
+      padding:11px 12px;
+      cursor:pointer;
+      text-align:left;
       transition: background .12s ease, border-color .12s ease;
       user-select:none;
     }
-    .nav-btn:hover{ background: rgba(37,99,235,.16); border-color: rgba(96,165,250,.20); }
-    .nav-btn.active{ background: rgba(37,99,235,.28); border-color: rgba(96,165,250,.28); }
+    .nav-btn:hover{
+      background: rgba(37,99,235,.16);
+      border-color: rgba(96,165,250,.20);
+    }
+    .nav-btn.active{
+      background: rgba(37,99,235,.30);
+      border-color: rgba(96,165,250,.28);
+    }
+
     .nav-btn .icon{
-      width:30px; height:30px; border-radius: 12px;
+      width:30px; height:30px;
+      border-radius:12px;
       background: rgba(148,163,184,.16);
       display:grid; place-items:center;
       font-weight:900; font-size:13px;
@@ -110,54 +140,77 @@
       flex:0 0 auto;
     }
     .nav-btn.active .icon{ background: rgba(37,99,235,.50); }
+
     .nav-btn .txt{ display:flex; flex-direction:column; gap:2px; }
     .nav-btn .txt .t{ font-weight:800; font-size:13px; }
     .nav-btn .txt .d{ font-size:12px; color: rgba(148,163,184,.92); }
 
     .sidebar-footer{
       padding:12px 14px 14px;
-      border-top: 1px solid rgba(148,163,184,.15);
-      color: rgba(226,232,240,.80);
+      border-top:1px solid rgba(148,163,184,.15);
+      color: rgba(226,232,240,.82);
       font-size:12px;
       display:flex; flex-direction:column; gap:10px;
     }
     .badge{
       display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
+      padding:8px 10px;
+      border-radius:999px;
       border:1px solid rgba(148,163,184,.25);
       background: rgba(2,6,23,.22);
       width: fit-content;
     }
-    .badge i{ width:10px; height:10px; border-radius:999px; background:#22c55e; display:inline-block; }
+    .badge i{
+      width:10px; height:10px; border-radius:999px;
+      background:#22c55e; display:inline-block;
+      box-shadow: 0 0 0 3px rgba(34,197,94,.12);
+    }
 
-    /* Main */
-    .main{ width:100%; padding: 22px; padding-left: calc(22px + var(--sidebar-collapsed)); }
-    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+    /* MAIN */
+    .main{
+      width:100%;
+      padding: 22px;
+      padding-left: calc(22px + var(--sidebar-edge));
+    }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+
     .page-title{ display:flex; flex-direction:column; gap:6px; }
-    .page-title h1{ margin:0; font-size:20px; font-weight:900; color: var(--primary); }
-    .page-title p{ margin:0; font-size:13px; color: var(--muted); }
+    .page-title h1{ margin:0; font-size:20px; font-weight:900; color:var(--primary); }
+    .page-title p{ margin:0; font-size:13px; color:var(--muted); }
 
-    .quick-actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .quick-actions{
+      display:flex; align-items:center; gap:10px;
+      flex-wrap:wrap; justify-content:flex-end;
+    }
+
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:7px 10px; border-radius:999px;
       border:1px solid var(--border); background:#fff;
-      color: var(--muted); font-size:12px; font-weight:800;
+      color: var(--muted);
+      font-size:12px; font-weight:800;
     }
     .pill b{ color: var(--primary); }
 
     .btn{
       border:1px solid var(--border);
-      background: var(--card);
+      background:#fff;
       padding:10px 12px;
       border-radius: 12px;
       cursor:pointer;
       font-weight:800;
-      color: var(--primary);
+      font-size:13px;
+      color:var(--primary);
       box-shadow: 0 1px 0 rgba(2,6,23,.04);
       user-select:none;
-      font-size:13px;
     }
+    .btn:hover{ border-color:#cbd5e1; }
+    .btn:active{ transform: scale(.99); }
     .btn.primary{
       border-color: rgba(37,99,235,.35);
       background: rgba(37,99,235,.10);
@@ -171,18 +224,18 @@
 
     .grid{ display:grid; gap:14px; grid-template-columns: 1fr; }
     @media(min-width: 980px){
-      .grid.cols-2{ grid-template-columns: 1.1fr .9fr; }
+      .grid.cols-2{ grid-template-columns: 1.15fr .85fr; }
     }
 
     .card{
-      background: var(--card);
+      background:var(--card);
       border:1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
     }
-    .card h2{ margin:0 0 8px; font-size:16px; font-weight:900; color: var(--primary); }
-    .card p{ margin:0; color: var(--muted); font-size:13px; line-height:1.55; }
+    .card h2{ margin:0 0 8px; font-size:16px; font-weight:900; color:var(--primary); }
+    .card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.55; }
 
     .form{ display:grid; gap:12px; margin-top:12px; }
     .row{ display:grid; gap:10px; grid-template-columns: 1fr; }
@@ -192,60 +245,88 @@
       .row.cols-4{ grid-template-columns: 1fr 1fr 1fr 1fr; }
     }
 
-    label{ display:flex; flex-direction:column; gap:6px; font-size:12px; color: var(--muted); font-weight:800; }
+    label{
+      display:flex; flex-direction:column; gap:6px;
+      font-size:12px; color:var(--muted); font-weight:800;
+    }
     input, select, textarea{
       width:100%;
       border:1px solid var(--border);
-      border-radius: 12px;
+      border-radius:12px;
       padding:10px 11px;
       font-family:inherit;
       font-size:13px;
+      background:#fff;
       outline:none;
-      background: #fff;
     }
-    textarea{ min-height: 98px; resize: vertical; }
+    textarea{ min-height: 96px; resize: vertical; }
     input:focus, select:focus, textarea:focus{
       border-color: rgba(37,99,235,.45);
       box-shadow: 0 0 0 4px rgba(37,99,235,.10);
     }
 
+    .hr{ height:1px; background:var(--border); margin:12px 0; }
+    .muted{ color:var(--muted); }
     .section{ display:none; }
     .section.active{ display:block; }
 
-    table{ width:100%; border-collapse: separate; border-spacing:0; overflow:hidden; border-radius:14px; border:1px solid var(--border); }
-    th, td{ padding:10px 10px; font-size:13px; border-bottom:1px solid var(--border); }
-    th{ background:#f8fafc; color:var(--primary); text-align:left; font-weight:900; }
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing:0;
+      border:1px solid var(--border);
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+    }
+    th, td{
+      padding:10px 10px;
+      font-size:13px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    th{
+      background:#f8fafc;
+      text-align:left;
+      font-weight:900;
+      color:var(--primary);
+    }
     tr:last-child td{ border-bottom:none; }
-    td small{ color: var(--muted); font-weight:800; }
+    td small{ color:var(--muted); font-weight:800; }
 
-    .muted{ color: var(--muted); }
-    .hr{ height:1px; background: var(--border); margin:12px 0; }
-
-    /* Modal Auth */
+    /* MODAL AUTH */
     .modal{
-      position: fixed; inset:0; z-index: 200;
+      position: fixed; inset:0;
+      z-index: 300;
       display:none;
       background: rgba(2,6,23,.55);
       backdrop-filter: blur(6px);
-      align-items:center; justify-content:center;
-      padding: 18px;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
     }
     .modal.show{ display:flex; }
     .modal-card{
-      width: min(520px, 100%);
+      width: min(560px, 100%);
       background:#fff;
       border:1px solid var(--border);
-      border-radius: 18px;
+      border-radius:18px;
       box-shadow: 0 20px 60px rgba(2,6,23,.25);
       padding:16px;
     }
-    .modal-card h3{ margin:0; font-weight:900; color: var(--primary); }
-    .modal-card p{ margin:6px 0 0; color: var(--muted); font-size:13px; }
-    .modal-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
+    .modal-card h3{ margin:0; font-weight:900; color:var(--primary); }
+    .modal-card p{ margin:6px 0 0; color:var(--muted); font-size:13px; }
+    .modal-actions{
+      display:flex; gap:10px; justify-content:flex-end;
+      flex-wrap:wrap; margin-top:12px;
+    }
 
-    /* Toast */
+    /* TOAST */
     .toast{
-      position: fixed; right: 18px; bottom: 18px; z-index: 220;
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 400;
       width: min(420px, calc(100% - 36px));
       display:none;
     }
@@ -261,13 +342,25 @@
       display:flex; gap:10px; align-items:flex-start;
     }
     .toast .inner .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: #22c55e; margin-top: 6px;
+      width:10px; height:10px; border-radius:50%;
+      background:#22c55e; margin-top:6px;
       box-shadow: 0 0 0 3px rgba(34,197,94,.15);
       flex:0 0 auto;
     }
-    .toast .inner .t{ font-weight:900; font-size:13px; margin:0 0 4px; }
+    .toast .inner .t{ margin:0 0 4px; font-weight:900; font-size:13px; }
     .toast .inner .d{ margin:0; font-size:12px; color: rgba(226,232,240,.85); line-height:1.45; }
+
+    /* SMALL UX */
+    .hint{
+      display:inline-flex;
+      padding:7px 10px;
+      border-radius:12px;
+      border:1px dashed var(--border);
+      background:#fff;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
   </style>
 </head>
 
@@ -279,7 +372,7 @@
       <div class="brand-dot" aria-hidden="true"></div>
       <div class="brand-title">
         <div class="name">HIROCROSS Plan</div>
-        <div class="sub">One File • Supabase</div>
+        <div class="sub">One File • Full Suite</div>
       </div>
       <button class="pin-btn" id="pinBtn" type="button">PIN</button>
     </div>
@@ -314,12 +407,13 @@
 
       <div class="group-label">Akun</div>
 
-      <button class="nav-btn" id="btnOpenAuth" type="button">
+      <!-- ROBUST: onclick + handler -->
+      <button class="nav-btn" id="btnOpenAuth" type="button" onclick="openAuth()">
         <span class="icon">🔒</span>
         <span class="txt"><span class="t">Login</span><span class="d">Masuk / Daftar</span></span>
       </button>
 
-      <button class="nav-btn" id="btnLogout" type="button">
+      <button class="nav-btn" id="btnLogout" type="button" onclick="doLogout()">
         <span class="icon">⎋</span>
         <span class="txt"><span class="t">Logout</span><span class="d">Keluar akun</span></span>
       </button>
@@ -350,7 +444,7 @@
       <div class="grid cols-2">
         <div class="card">
           <h2>Setup Program</h2>
-          <p>Data ini menjadi “kunci” semua halaman lain. Simpan dulu Setup, lalu isi Annual/Bulanan/Monitoring/Tes.</p>
+          <p>Isi Setup dulu. Setelah itu Annual/Bulanan/Monitoring/Tes akan tersimpan per program & per akun.</p>
 
           <div class="form">
             <div class="row cols-2">
@@ -392,6 +486,8 @@
               <button class="btn primary" id="btnSaveSetup" type="button">Save Setup</button>
               <button class="btn" id="btnLoadSetup" type="button">Load Setup</button>
             </div>
+
+            <div class="hint">Jika tombol Save/Load tidak bekerja, pastikan Anda sudah login dan SQL schema + RLS sudah dijalankan di Supabase.</div>
           </div>
         </div>
 
@@ -408,7 +504,7 @@
           </div>
 
           <div class="hr"></div>
-          <p class="muted"><b>Catatan:</b> Semua data tersimpan per user (RLS). User lain tidak bisa melihat data Anda.</p>
+          <p class="muted"><b>Keamanan:</b> Data per user, RLS aktif. User lain tidak bisa melihat data Anda.</p>
         </div>
       </div>
     </section>
@@ -417,7 +513,7 @@
     <section id="sec-annual" class="section">
       <div class="card">
         <h2>Annual Plan (Mingguan)</h2>
-        <p>Isi volume% dan intensitas% per minggu. Sistem menghitung “planned load” sederhana untuk monitoring rencana.</p>
+        <p>Isi volume% dan intensitas% per minggu. Planned load sederhana dipakai untuk monitoring rencana.</p>
 
         <div class="form">
           <div class="row cols-4">
@@ -461,7 +557,7 @@
         </div>
 
         <p class="muted" style="margin-top:10px;">
-          Planned Load = round( (Volume% * 0.6) + (Intensity% * 0.4) ) × 10.
+          Planned Load = round((Volume% × 0.6) + (Intensity% × 0.4)) × 10.
         </p>
       </div>
     </section>
@@ -471,7 +567,7 @@
       <div class="grid cols-2">
         <div class="card">
           <h2>Rencana Bulanan</h2>
-          <p>Masukkan tujuan dan fokus per bulan. Disimpan per tahun-bulan.</p>
+          <p>Masukkan tujuan dan fokus per bulan. Disimpan per periode tahun-bulan.</p>
 
           <div class="form">
             <div class="row cols-3">
@@ -507,6 +603,7 @@
         <div class="card">
           <h2>Daftar Bulanan</h2>
           <p>Ringkasan bulanan yang sudah tersimpan.</p>
+
           <div style="margin-top:12px; overflow:auto;">
             <table id="monthlyTable">
               <thead>
@@ -519,6 +616,7 @@
               <tbody></tbody>
             </table>
           </div>
+
           <div class="muted" style="margin-top:10px;">Klik Reload Data untuk refresh daftar.</div>
         </div>
       </div>
@@ -560,7 +658,8 @@
 
         <div class="card">
           <h2>Log Terbaru</h2>
-          <p>10 data terbaru.</p>
+          <p>10 data terbaru. Klik baris untuk load ke form.</p>
+
           <div style="margin-top:12px; overflow:auto;">
             <table id="monTable">
               <thead>
@@ -574,7 +673,8 @@
               <tbody></tbody>
             </table>
           </div>
-          <div class="muted" style="margin-top:10px;">Klik salah satu baris untuk auto-load ke form.</div>
+
+          <div class="muted" style="margin-top:10px;">Jika kosong, klik Reload Data.</div>
         </div>
       </div>
     </section>
@@ -584,7 +684,7 @@
       <div class="grid cols-2">
         <div class="card">
           <h2>Tes & Pengukuran</h2>
-          <p>Input tes, skor 1–5, dan tampilkan radar per kategori.</p>
+          <p>Input tes dan skor 1–5. Radar menampilkan rata-rata skor per kategori.</p>
 
           <div class="form">
             <div class="row cols-3">
@@ -645,7 +745,8 @@
               <tbody></tbody>
             </table>
           </div>
-          <div class="muted" style="margin-top:10px;">Pilih checkbox lalu Delete Terpilih jika diperlukan.</div>
+
+          <div class="muted" style="margin-top:10px;">Pilih checkbox lalu Delete Terpilih.</div>
         </div>
 
         <div class="card">
@@ -664,7 +765,7 @@
   <div class="modal" id="authModal" aria-hidden="true">
     <div class="modal-card">
       <h3>Login / Daftar</h3>
-      <p>Gunakan email & password. Setelah login, data akan tersimpan per akun.</p>
+      <p>Masukkan email & password. Setelah login, data tersimpan per akun.</p>
 
       <div class="form">
         <div class="row cols-2">
@@ -677,7 +778,7 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn" id="btnAuthClose" type="button">Tutup</button>
+          <button class="btn" id="btnAuthClose" type="button" onclick="closeAuth()">Tutup</button>
           <button class="btn" id="btnSignup" type="button">Daftar</button>
           <button class="btn primary" id="btnLogin" type="button">Login</button>
         </div>
@@ -698,14 +799,34 @@
 
   <script>
     // =========================================================
-    // 0) SUPABASE CONFIG (GANTI DENGAN PUNYA ANDA)
+    // 1) SUPABASE CONFIG (WAJIB DIGANTI)
     // =========================================================
     const SUPABASE_URL = "https://urifesrbfoutokrmxnwu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_rrLX0bFQkHYsrgQAiVJRnw_UhdiL...";
+
+    // Guard: biar tidak diam-diam gagal
+    function isConfigValid(){
+      return (SUPABASE_URL.startsWith("https://") && SUPABASE_URL.includes(".supabase.co") &&
+              (SUPABASE_ANON_KEY.startsWith("sb_publishable_") || SUPABASE_ANON_KEY.startsWith("eyJ")));
+    }
+
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // =========================================================
-    // 1) UI NAV + PIN
+    // 2) TOAST
+    // =========================================================
+    let toastTimer = null;
+    function toast(title, desc){
+      const el = document.getElementById("toast");
+      document.getElementById("toastT").textContent = title || "Info";
+      document.getElementById("toastD").textContent = desc || "";
+      el.classList.add("show");
+      if(toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(()=> el.classList.remove("show"), 2800);
+    }
+
+    // =========================================================
+    // 3) NAV + PIN (KOMBINASI: gaya sederhana, fungsi lengkap)
     // =========================================================
     const meta = {
       setup: { h1:"Setup", desc:"Konfigurasi awal program latihan dan kalender kompetisi." },
@@ -723,19 +844,19 @@
       monitoring: document.getElementById("sec-monitoring"),
       testing: document.getElementById("sec-testing"),
     };
+
     const pageH1 = document.getElementById("pageH1");
     const pageDesc = document.getElementById("pageDesc");
 
     function setActivePage(key){
       navBtns.forEach(b => b.classList.toggle("active", b.dataset.target === key));
       Object.keys(sections).forEach(k => sections[k].classList.toggle("active", k === key));
-      pageH1.textContent = meta[key]?.h1 ?? "Halaman";
-      pageDesc.textContent = meta[key]?.desc ?? "";
+      pageH1.textContent = meta[key]?.h1 || "Halaman";
+      pageDesc.textContent = meta[key]?.desc || "";
       localStorage.setItem("hc_active_page", key);
     }
-    navBtns.forEach(btn => btn.addEventListener("click", () => setActivePage(btn.dataset.target)));
-    const last = localStorage.getItem("hc_active_page");
-    if(last && sections[last]) setActivePage(last);
+
+    navBtns.forEach(btn => btn.addEventListener("click", ()=> setActivePage(btn.dataset.target)));
 
     const pinBtn = document.getElementById("pinBtn");
     const pinState = document.getElementById("pinState");
@@ -746,39 +867,44 @@
       pinState.textContent = isPinned ? "Pinned" : "Hover";
     }
     pinBtn.addEventListener("click", ()=>{
-      const next = !document.body.classList.contains("sidebar-pinned");
-      applyPinned(next);
-      toast("Sidebar", next ? "Sidebar dipin: selalu terbuka." : "Sidebar kembali mode hover.");
+      applyPinned(!document.body.classList.contains("sidebar-pinned"));
     });
     applyPinned(localStorage.getItem("hc_sidebar_pinned") === "1");
 
+    const last = localStorage.getItem("hc_active_page");
+    if(last && sections[last]) setActivePage(last);
+
     // =========================================================
-    // 2) AUTH
+    // 4) AUTH UI (ROBUST)
     // =========================================================
     const authModal = document.getElementById("authModal");
-    const btnOpenAuth = document.getElementById("btnOpenAuth");
-    const btnAuthClose = document.getElementById("btnAuthClose");
-    const btnLogin = document.getElementById("btnLogin");
-    const btnSignup = document.getElementById("btnSignup");
-    const btnLogout = document.getElementById("btnLogout");
-
     const authStatus = document.getElementById("authStatus");
     const userEmail = document.getElementById("userEmail");
     const programStatus = document.getElementById("programStatus");
 
-    let CURRENT_USER = null;
-    let CURRENT_PROGRAM = null; // row hc_programs
+    function openAuth(){
+      if(!isConfigValid()){
+        toast("Konfigurasi Supabase", "Ganti SUPABASE_URL & SUPABASE_ANON_KEY dulu (Project URL + Publishable key).");
+        return;
+      }
+      authModal.classList.add("show");
+    }
+    function closeAuth(){
+      authModal.classList.remove("show");
+    }
+    // expose for onclick
+    window.openAuth = openAuth;
+    window.closeAuth = closeAuth;
 
-    function openAuth(){ authModal.classList.add("show"); }
-    function closeAuth(){ authModal.classList.remove("show"); }
-
-    btnOpenAuth.addEventListener("click", openAuth);
-    btnAuthClose.addEventListener("click", closeAuth);
     authModal.addEventListener("click", (e)=>{ if(e.target === authModal) closeAuth(); });
+
+    let CURRENT_USER = null;
+    let CURRENT_PROGRAM = null;
 
     async function refreshSession(){
       const { data } = await supabase.auth.getSession();
-      CURRENT_USER = data?.session?.user ?? null;
+      CURRENT_USER = data?.session?.user || null;
+
       if(CURRENT_USER){
         authStatus.textContent = "Logged in";
         userEmail.textContent = CURRENT_USER.email || "-";
@@ -788,54 +914,22 @@
       }
     }
 
-    btnSignup.addEventListener("click", async ()=>{
-      const email = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPass").value;
-      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
-
-      const { error } = await supabase.auth.signUp({ email, password });
-      if(error){ toast("Daftar gagal", error.message); return; }
-      toast("Daftar", "Berhasil. Silakan cek email jika diminta verifikasi, lalu login.");
-    });
-
-    btnLogin.addEventListener("click", async ()=>{
-      const email = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPass").value;
-      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if(error){ toast("Login gagal", error.message); return; }
-
-      closeAuth();
-      await bootAfterLogin();
-      toast("Login", "Berhasil login. Data siap digunakan.");
-    });
-
-    btnLogout.addEventListener("click", async ()=>{
-      await supabase.auth.signOut();
-      CURRENT_USER = null;
-      CURRENT_PROGRAM = null;
-      programStatus.textContent = "Program: -";
-      toast("Logout", "Anda sudah logout.");
-    });
-
-    supabase.auth.onAuthStateChange(async (_event, session)=>{
-      CURRENT_USER = session?.user ?? null;
-      await refreshSession();
-      if(CURRENT_USER) await bootAfterLogin();
-    });
-
     // =========================================================
-    // 3) HELPERS
+    // 5) HELPERS
     // =========================================================
-    let toastTimer = null;
-    function toast(title, desc){
-      const el = document.getElementById("toast");
-      document.getElementById("toastT").textContent = title || "Info";
-      document.getElementById("toastD").textContent = desc || "";
-      el.classList.add("show");
-      if(toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> el.classList.remove("show"), 2600);
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function clampInt(v, min, max){
+      const n = Number(v);
+      if(Number.isNaN(n)) return min;
+      return Math.max(min, Math.min(max, Math.round(n)));
     }
 
     function fmtDateID(v){
@@ -845,7 +939,7 @@
       return d.toLocaleDateString("id-ID", { weekday:"long", year:"numeric", month:"long", day:"2-digit" });
     }
 
-    function shortText(s, n=40){
+    function shortText(s, n=42){
       s = (s||"").trim();
       if(!s) return "-";
       return s.length > n ? s.slice(0,n-1) + "…" : s;
@@ -861,18 +955,15 @@
     }
 
     async function getOrCreateProgram(){
-      // Ambil program terbaru user. Jika belum ada, buat 1 row default.
       const { data: rows, error } = await supabase
         .from("hc_programs")
         .select("*")
         .order("updated_at", { ascending:false })
         .limit(1);
 
-      if(error){ throw error; }
+      if(error) throw error;
 
-      if(rows && rows.length){
-        return rows[0];
-      }
+      if(rows && rows.length) return rows[0];
 
       const { data: created, error: e2 } = await supabase
         .from("hc_programs")
@@ -886,7 +977,7 @@
         .select("*")
         .single();
 
-      if(e2){ throw e2; }
+      if(e2) throw e2;
       return created;
     }
 
@@ -898,8 +989,9 @@
         CURRENT_PROGRAM = await getOrCreateProgram();
         programStatus.textContent = "Program: " + (CURRENT_PROGRAM.program_name?.trim() || "(belum diisi)");
         await loadSetupToUI();
-        await reloadAllLists();
         await loadAnnualToTable();
+        await reloadMonthlyList();
+        await reloadMonitoringList();
         await reloadTestsAndRadar();
       }catch(e){
         toast("Error", e.message || String(e));
@@ -907,7 +999,72 @@
     }
 
     // =========================================================
-    // 4) SETUP (hc_programs)
+    // 6) AUTH ACTIONS
+    // =========================================================
+    document.getElementById("btnSignup").addEventListener("click", async ()=>{
+      if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
+
+      const email = document.getElementById("authEmail").value.trim();
+      const password = document.getElementById("authPass").value;
+      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
+
+      const { error } = await supabase.auth.signUp({ email, password });
+      if(error){ toast("Daftar gagal", error.message); return; }
+
+      toast("Daftar", "Berhasil. Jika Supabase minta verifikasi email, cek inbox Anda.");
+    });
+
+    document.getElementById("btnLogin").addEventListener("click", async ()=>{
+      if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
+
+      const email = document.getElementById("authEmail").value.trim();
+      const password = document.getElementById("authPass").value;
+      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error){ toast("Login gagal", error.message); return; }
+
+      closeAuth();
+      await bootAfterLogin();
+      toast("Login", "Berhasil login.");
+    });
+
+    // ROBUST logout exposed to onclick
+    async function doLogout(){
+      try{
+        if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
+
+        const { data: sess } = await supabase.auth.getSession();
+        if(!sess?.session){
+          toast("Logout", "Anda masih Guest (belum login).");
+          return;
+        }
+
+        const { error } = await supabase.auth.signOut();
+        if(error) throw error;
+
+        CURRENT_USER = null;
+        CURRENT_PROGRAM = null;
+        authStatus.textContent = "Guest";
+        userEmail.textContent = "-";
+        programStatus.textContent = "Program: -";
+
+        toast("Logout", "Berhasil logout.");
+        setTimeout(()=> location.reload(), 350);
+      }catch(e){
+        toast("Logout gagal", e.message || String(e));
+      }
+    }
+    window.doLogout = doLogout;
+
+    supabase.auth.onAuthStateChange(async (_event, session)=>{
+      CURRENT_USER = session?.user || null;
+      await refreshSession();
+      if(CURRENT_USER) await bootAfterLogin();
+    });
+
+    // =========================================================
+    // 7) SETUP (hc_programs)
     // =========================================================
     const setupProgramName = document.getElementById("setupProgramName");
     const setupSport = document.getElementById("setupSport");
@@ -975,6 +1132,7 @@
           .single();
 
         if(error) throw error;
+
         CURRENT_PROGRAM = data;
         applySetupSummary(CURRENT_PROGRAM);
         toast("Setup", "Berhasil disimpan.");
@@ -984,7 +1142,7 @@
     });
 
     // =========================================================
-    // 5) ANNUAL PLAN (hc_annual_weeks)
+    // 8) ANNUAL (hc_annual_weeks)
     // =========================================================
     const annualTableBody = document.querySelector("#annualTable tbody");
 
@@ -1022,9 +1180,7 @@
       const intInput = tr.querySelector('input[data-k="intensity_pct"]');
       const loadEl = tr.querySelector('b[data-k="load"]');
 
-      function recalc(){
-        loadEl.textContent = plannedLoad(volInput.value, intInput.value);
-      }
+      function recalc(){ loadEl.textContent = plannedLoad(volInput.value, intInput.value); }
       volInput.addEventListener("input", recalc);
       intInput.addEventListener("input", recalc);
 
@@ -1049,7 +1205,7 @@
     });
 
     async function loadAnnualToTable(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) return;
+      if(!CURRENT_USER || !CURRENT_PROGRAM) { renderAnnualTable([]); return; }
 
       const { data, error } = await supabase
         .from("hc_annual_weeks")
@@ -1082,6 +1238,7 @@
           const volume_pct = clampInt(tr.querySelector('[data-k="volume_pct"]').value, 0, 100);
           const intensity_pct = clampInt(tr.querySelector('[data-k="intensity_pct"]').value, 0, 100);
           const notes = tr.querySelector('[data-k="notes"]').value.trim();
+
           return {
             user_id: CURRENT_USER.id,
             program_id: CURRENT_PROGRAM.id,
@@ -1095,6 +1252,7 @@
           .upsert(payload, { onConflict: "program_id,week_no" });
 
         if(error) throw error;
+
         toast("Annual Plan", "Berhasil disimpan.");
       }catch(e){
         toast("Save Annual gagal", e.message || String(e));
@@ -1102,12 +1260,13 @@
     });
 
     // =========================================================
-    // 6) MONTHLY (hc_monthly_plans)
+    // 9) MONTHLY (hc_monthly_plans)
     // =========================================================
     const monthlyTableBody = document.querySelector("#monthlyTable tbody");
 
     async function reloadMonthlyList(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) return;
+      if(!CURRENT_USER || !CURRENT_PROGRAM) { monthlyTableBody.innerHTML = ""; return; }
+
       const { data, error } = await supabase
         .from("hc_monthly_plans")
         .select("*")
@@ -1124,7 +1283,7 @@
         tr.innerHTML = `
           <td><b>${r.year}-${String(r.month).padStart(2,"0")}</b></td>
           <td>${escapeHtml(r.focus || "-")}</td>
-          <td>${escapeHtml(shortText(r.goal || "-", 50))}</td>
+          <td>${escapeHtml(shortText(r.goal || "-", 56))}</td>
         `;
         monthlyTableBody.appendChild(tr);
       });
@@ -1132,6 +1291,7 @@
 
     document.getElementById("btnMonthlySave").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1163,6 +1323,7 @@
 
     document.getElementById("btnMonthlyLoad").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1194,12 +1355,13 @@
     });
 
     // =========================================================
-    // 7) MONITORING (hc_monitoring_logs)
+    // 10) MONITORING (hc_monitoring_logs)
     // =========================================================
     const monTableBody = document.querySelector("#monTable tbody");
 
     async function reloadMonitoringList(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) return;
+      if(!CURRENT_USER || !CURRENT_PROGRAM) { monTableBody.innerHTML = ""; return; }
+
       const { data, error } = await supabase
         .from("hc_monitoring_logs")
         .select("*")
@@ -1217,7 +1379,7 @@
           <td><b>${r.log_date}</b><br><small class="muted">${fmtDateID(r.log_date)}</small></td>
           <td>${r.session_load}</td>
           <td>${r.readiness}</td>
-          <td>${escapeHtml(shortText(r.note, 40))}</td>
+          <td>${escapeHtml(shortText(r.note, 44))}</td>
         `;
         tr.addEventListener("click", ()=>{
           document.getElementById("monDate").value = r.log_date;
@@ -1232,6 +1394,7 @@
 
     document.getElementById("btnMonSave").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1264,6 +1427,7 @@
 
     document.getElementById("btnMonLoad").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1292,6 +1456,7 @@
 
     document.getElementById("btnMonDelete").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1314,7 +1479,7 @@
     });
 
     // =========================================================
-    // 8) TESTS + RADAR (hc_tests)
+    // 11) TESTS + RADAR (hc_tests)
     // =========================================================
     const testTableBody = document.querySelector("#testTable tbody");
     let radarChart = null;
@@ -1328,52 +1493,6 @@
         flex:"Fleksibilitas",
         agility:"Kelincahan"
       })[k] || k;
-    }
-
-    async function reloadTestsAndRadar(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) return;
-
-      const { data, error } = await supabase
-        .from("hc_tests")
-        .select("*")
-        .eq("program_id", CURRENT_PROGRAM.id)
-        .order("test_date", { ascending:false })
-        .limit(200);
-
-      if(error){ toast("Load tes gagal", error.message); return; }
-
-      // table
-      testTableBody.innerHTML = "";
-      (data || []).forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="checkbox" data-id="${r.id}"></td>
-          <td><b>${r.test_date}</b></td>
-          <td>${escapeHtml(categoryLabel(r.category))}</td>
-          <td>${escapeHtml(r.test_name)}</td>
-          <td>${escapeHtml(r.result_value || "")}</td>
-          <td><b>${r.score}</b></td>
-        `;
-        testTableBody.appendChild(tr);
-      });
-
-      // radar avg per category
-      const cats = ["endurance","speed","strength","power","flex","agility"];
-      const sums = Object.fromEntries(cats.map(c=>[c, {sum:0, n:0}]));
-      (data || []).forEach(r=>{
-        if(sums[r.category]){
-          sums[r.category].sum += Number(r.score||0);
-          sums[r.category].n += 1;
-        }
-      });
-
-      const labels = cats.map(categoryLabel);
-      const values = cats.map(c=>{
-        const n = sums[c].n;
-        return n ? (sums[c].sum / n) : 0;
-      });
-
-      renderRadar(labels, values);
     }
 
     function renderRadar(labels, values){
@@ -1405,8 +1524,50 @@
       });
     }
 
+    async function reloadTestsAndRadar(){
+      if(!CURRENT_USER || !CURRENT_PROGRAM) { testTableBody.innerHTML = ""; renderRadar(["-"], [0]); return; }
+
+      const { data, error } = await supabase
+        .from("hc_tests")
+        .select("*")
+        .eq("program_id", CURRENT_PROGRAM.id)
+        .order("test_date", { ascending:false })
+        .limit(200);
+
+      if(error){ toast("Load tes gagal", error.message); return; }
+
+      // table
+      testTableBody.innerHTML = "";
+      (data || []).forEach(r=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input type="checkbox" data-id="${r.id}"></td>
+          <td><b>${r.test_date}</b></td>
+          <td>${escapeHtml(categoryLabel(r.category))}</td>
+          <td>${escapeHtml(r.test_name)}</td>
+          <td>${escapeHtml(r.result_value || "")}</td>
+          <td><b>${r.score}</b></td>
+        `;
+        testTableBody.appendChild(tr);
+      });
+
+      const cats = ["endurance","speed","strength","power","flex","agility"];
+      const sums = Object.fromEntries(cats.map(c=>[c, {sum:0, n:0}]));
+      (data || []).forEach(r=>{
+        if(sums[r.category]){
+          sums[r.category].sum += Number(r.score||0);
+          sums[r.category].n += 1;
+        }
+      });
+
+      const labels = cats.map(categoryLabel);
+      const values = cats.map(c => sums[c].n ? (sums[c].sum / sums[c].n) : 0);
+      renderRadar(labels, values);
+    }
+
     document.getElementById("btnTestSave").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
 
@@ -1446,6 +1607,7 @@
 
     document.getElementById("btnTestDeleteSelected").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
+
       try{
         const ids = Array.from(testTableBody.querySelectorAll('input[type="checkbox"][data-id]:checked'))
           .map(x => x.getAttribute("data-id"))
@@ -1468,50 +1630,40 @@
     });
 
     // =========================================================
-    // 9) GLOBAL RELOAD BUTTON
+    // 12) GLOBAL RELOAD
     // =========================================================
     document.getElementById("btnReloadAll").addEventListener("click", async ()=>{
       if(!requireLogin()) return;
-      await reloadAllLists();
       await loadAnnualToTable();
-      await reloadTestsAndRadar();
-      toast("Reload", "Semua list di-refresh.");
-    });
-
-    async function reloadAllLists(){
       await reloadMonthlyList();
       await reloadMonitoringList();
-    }
+      await reloadTestsAndRadar();
+      toast("Reload", "Semua data di-refresh.");
+    });
 
     // =========================================================
-    // 10) SAFETY UTILS
-    // =========================================================
-    function clampInt(v, min, max){
-      const n = Number(v);
-      if(Number.isNaN(n)) return min;
-      return Math.max(min, Math.min(max, Math.round(n)));
-    }
-
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    // =========================================================
-    // 11) INIT
+    // 13) INIT
     // =========================================================
     (async function init(){
+      if(!isConfigValid()){
+        toast("Konfigurasi", "Ganti SUPABASE_URL & SUPABASE_ANON_KEY terlebih dahulu.");
+      }
+
       await refreshSession();
       if(CURRENT_USER){
         await bootAfterLogin();
       } else {
-        toast("Info", "Silakan login untuk mulai menyimpan data ke Supabase.");
+        // preload table ui
+        renderAnnualTable([]);
+        renderRadar(
+          ["Daya Tahan","Kecepatan","Kekuatan","Power","Fleksibilitas","Kelincahan"],
+          [0,0,0,0,0,0]
+        );
       }
     })();
   </script>
+
+  <!--
+  -->
 </body>
 </html>
