@@ -1,1790 +1,264 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HIROCROSS Plan • One File (Supabase)</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HIROCROSS PLAN</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- FAVICON -->
+<link rel="icon" href="./Hirocross-logo.png" type="image/png">
+<meta name="theme-color" content="#0f172a">
 
-  <style>
-    :root{
-      --primary:#0f172a;
-      --accent:#2563eb;
-      --bg:#f1f5f9;
-      --card:#ffffff;
-      --border:#e2e8f0;
-      --muted:#64748b;
-      --text:#0b1220;
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
 
-      --sidebar-w: 292px;
-      --sidebar-edge: 16px;
-      --radius: 16px;
-      --shadow: 0 10px 30px rgba(2,6,23,.10);
-    }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--text);
-      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 40%, #fff 100%);
-    }
+<!-- Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
 
-    .hover-edge{
-      position:fixed; left:0; top:0;
-      height:100vh; width:var(--sidebar-edge);
-      z-index:50;
-      background: transparent;
-    }
-    .sidebar{
-      position:fixed; left:0; top:0;
-      height:100vh; width:var(--sidebar-w);
-      transform: translateX(calc(-1 * (var(--sidebar-w) - var(--sidebar-edge))));
-      transition: transform .18s ease;
-      z-index: 80;
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://urifesrfboutokrmxnwu.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_rrLXObFQkHYsrgQAiVJRnw_UhdiLe8S";
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
 
-      background: rgba(15,23,42,.95);
-      backdrop-filter: blur(10px);
-      border-right: 1px solid rgba(148,163,184,.18);
-      box-shadow: 10px 0 30px rgba(2,6,23,.18);
-      display:flex; flex-direction:column;
-    }
-    .hover-edge:hover + .sidebar,
-    .sidebar:hover,
-    body.sidebar-pinned .sidebar{
-      transform: translateX(0);
-    }
-    .sidebar-header{
-      display:flex; align-items:center; gap:12px;
-      padding:18px 16px 14px;
-      border-bottom:1px solid rgba(148,163,184,.15);
-    }
-    .brand-dot{
-      width:42px; height:42px; border-radius:14px;
-      background: radial-gradient(circle at 30% 30%, #60a5fa 0%, #2563eb 35%, #0ea5e9 100%);
-      box-shadow: 0 8px 20px rgba(37,99,235,.35);
-      flex:0 0 auto;
-    }
-    .brand-title{ display:flex; flex-direction:column; line-height:1.1; }
-    .brand-title .name{ color:#fff; font-weight:800; letter-spacing:.2px; }
-    .brand-title .sub{ color: rgba(226,232,240,.82); font-size:12px; margin-top:4px; }
+<style>
+:root{
+  --primary:#0f172a;
+  --accent:#2563eb;
+  --bg:#f1f5f9;
+  --success:#10b981;
+  --red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:#1e293b;
+}
 
-    .pin-btn{
-      margin-left:auto;
-      border:1px solid rgba(148,163,184,.25);
-      background: rgba(2,6,23,.28);
-      color: rgba(226,232,240,.92);
-      border-radius: 12px;
-      padding:8px 10px;
-      cursor:pointer;
-      font-weight:800;
-      font-size:12px;
-      user-select:none;
-    }
-    .pin-btn:active{ transform: scale(.99); }
+/* ===== HEADER ===== */
+header{
+  background:var(--primary);
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand img{width:38px}
+.brand h1{font-size:1rem;font-weight:800;letter-spacing:1px}
 
-    .nav{
-      padding:14px 10px;
-      display:flex; flex-direction:column; gap:8px;
-      overflow:auto;
-    }
-    .group-label{
-      margin: 10px 10px 4px;
-      font-size:11px;
-      letter-spacing:.12em;
-      font-weight:800;
-      color: rgba(148,163,184,.85);
-      text-transform:uppercase;
-    }
-    .nav-btn{
-      display:flex; align-items:center; gap:10px;
-      width:100%;
-      border:1px solid transparent;
-      background: transparent;
-      color: rgba(226,232,240,.92);
-      border-radius: 14px;
-      padding:11px 12px;
-      cursor:pointer;
-      text-align:left;
-      transition: background .12s ease, border-color .12s ease;
-      user-select:none;
-    }
-    .nav-btn:hover{
-      background: rgba(37,99,235,.16);
-      border-color: rgba(96,165,250,.20);
-    }
-    .nav-btn.active{
-      background: rgba(37,99,235,.30);
-      border-color: rgba(96,165,250,.28);
-    }
-    .nav-btn .icon{
-      width:30px; height:30px;
-      border-radius:12px;
-      background: rgba(148,163,184,.16);
-      display:grid; place-items:center;
-      font-weight:900; font-size:13px;
-      color: rgba(226,232,240,.96);
-      flex:0 0 auto;
-    }
-    .nav-btn.active .icon{ background: rgba(37,99,235,.50); }
-    .nav-btn .txt{ display:flex; flex-direction:column; gap:2px; }
-    .nav-btn .txt .t{ font-weight:800; font-size:13px; }
-    .nav-btn .txt .d{ font-size:12px; color: rgba(148,163,184,.92); }
+/* ===== LAYOUT ===== */
+.app-shell{
+  display:flex;
+  min-height:calc(100vh - 64px);
+}
 
-    .sidebar-footer{
-      padding:12px 14px 14px;
-      border-top:1px solid rgba(148,163,184,.15);
-      color: rgba(226,232,240,.82);
-      font-size:12px;
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .badge{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.25);
-      background: rgba(2,6,23,.22);
-      width: fit-content;
-    }
-    .badge i{
-      width:10px; height:10px; border-radius:999px;
-      background:#22c55e; display:inline-block;
-      box-shadow: 0 0 0 3px rgba(34,197,94,.12);
-    }
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:240px;
+  background:#020617;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.sidebar h3{
+  color:#94a3b8;
+  font-size:.7rem;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.sidebar button{
+  background:none;
+  border:none;
+  color:#cbd5e1;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  text-align:left;
+}
+.sidebar button:hover{background:rgba(255,255,255,.08)}
+.sidebar button.active{
+  background:rgba(255,255,255,.15);
+  color:#fff;
+}
 
-    .main{
-      width:100%;
-      padding: 22px;
-      padding-left: calc(22px + var(--sidebar-edge));
-    }
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-bottom:16px;
-      flex-wrap:wrap;
-    }
-    .page-title{ display:flex; flex-direction:column; gap:6px; }
-    .page-title h1{ margin:0; font-size:20px; font-weight:900; color:var(--primary); }
-    .page-title p{ margin:0; font-size:13px; color:var(--muted); }
+/* ===== MAIN ===== */
+.main{flex:1;padding:24px}
+.section{display:none}
+.section.active{display:block}
 
-    .quick-actions{
-      display:flex; align-items:center; gap:10px;
-      flex-wrap:wrap; justify-content:flex-end;
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:7px 10px; border-radius:999px;
-      border:1px solid var(--border); background:#fff;
-      color: var(--muted);
-      font-size:12px; font-weight:800;
-    }
-    .pill b{ color: var(--primary); }
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,.05);
+}
 
-    .btn{
-      border:1px solid var(--border);
-      background:#fff;
-      padding:10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-weight:800;
-      font-size:13px;
-      color:var(--primary);
-      box-shadow: 0 1px 0 rgba(2,6,23,.04);
-      user-select:none;
-    }
-    .btn:hover{ border-color:#cbd5e1; }
-    .btn:active{ transform: scale(.99); }
-    .btn.primary{
-      border-color: rgba(37,99,235,.35);
-      background: rgba(37,99,235,.10);
-      color: #0b2a6a;
-    }
-    .btn.danger{
-      border-color: rgba(239,68,68,.35);
-      background: rgba(239,68,68,.10);
-      color: #7f1d1d;
-    }
-
-    .grid{ display:grid; gap:14px; grid-template-columns: 1fr; }
-    @media(min-width: 980px){
-      .grid.cols-2{ grid-template-columns: 1.15fr .85fr; }
-    }
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
-    }
-    .card h2{ margin:0 0 8px; font-size:16px; font-weight:900; color:var(--primary); }
-    .card p{ margin:0; color:var(--muted); font-size:13px; line-height:1.55; }
-
-    .form{ display:grid; gap:12px; margin-top:12px; }
-    .row{ display:grid; gap:10px; grid-template-columns: 1fr; }
-    @media(min-width: 720px){
-      .row.cols-2{ grid-template-columns: 1fr 1fr; }
-      .row.cols-3{ grid-template-columns: 1fr 1fr 1fr; }
-      .row.cols-4{ grid-template-columns: 1fr 1fr 1fr 1fr; }
-    }
-    label{
-      display:flex; flex-direction:column; gap:6px;
-      font-size:12px; color:var(--muted); font-weight:800;
-    }
-    input, select, textarea{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:10px 11px;
-      font-family:inherit;
-      font-size:13px;
-      background:#fff;
-      outline:none;
-    }
-    textarea{ min-height: 96px; resize: vertical; }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(37,99,235,.45);
-      box-shadow: 0 0 0 4px rgba(37,99,235,.10);
-    }
-    .hr{ height:1px; background:var(--border); margin:12px 0; }
-    .muted{ color:var(--muted); }
-    .section{ display:none; }
-    .section.active{ display:block; }
-
-    table{
-      width:100%;
-      border-collapse: separate;
-      border-spacing:0;
-      border:1px solid var(--border);
-      border-radius:14px;
-      overflow:hidden;
-      background:#fff;
-    }
-    th, td{
-      padding:10px 10px;
-      font-size:13px;
-      border-bottom:1px solid var(--border);
-      vertical-align:top;
-    }
-    th{
-      background:#f8fafc;
-      text-align:left;
-      font-weight:900;
-      color:var(--primary);
-    }
-    tr:last-child td{ border-bottom:none; }
-    td small{ color:var(--muted); font-weight:800; }
-
-    .modal{
-      position: fixed; inset:0;
-      z-index: 300;
-      display:none;
-      background: rgba(2,6,23,.55);
-      backdrop-filter: blur(6px);
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
-    .modal.show{ display:flex; }
-    .modal-card{
-      width: min(560px, 100%);
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:18px;
-      box-shadow: 0 20px 60px rgba(2,6,23,.25);
-      padding:16px;
-    }
-    .modal-card h3{ margin:0; font-weight:900; color:var(--primary); }
-    .modal-card p{ margin:6px 0 0; color:var(--muted); font-size:13px; }
-    .modal-actions{
-      display:flex; gap:10px; justify-content:flex-end;
-      flex-wrap:wrap; margin-top:12px;
-    }
-
-    .toast{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 400;
-      width: min(420px, calc(100% - 36px));
-      display:none;
-    }
-    .toast.show{ display:block; }
-    .toast .inner{
-      background: rgba(15,23,42,.94);
-      color:#fff;
-      border: 1px solid rgba(148,163,184,.22);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: 0 16px 40px rgba(2,6,23,.25);
-      backdrop-filter: blur(10px);
-      display:flex; gap:10px; align-items:flex-start;
-    }
-    .toast .inner .dot{
-      width:10px; height:10px; border-radius:50%;
-      background:#22c55e; margin-top:6px;
-      box-shadow: 0 0 0 3px rgba(34,197,94,.15);
-      flex:0 0 auto;
-    }
-    .toast .inner .t{ margin:0 0 4px; font-weight:900; font-size:13px; }
-    .toast .inner .d{ margin:0; font-size:12px; color: rgba(226,232,240,.85); line-height:1.45; }
-
-    .hint{
-      display:inline-flex;
-      padding:7px 10px;
-      border-radius:12px;
-      border:1px dashed var(--border);
-      background:#fff;
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-    }
-  </style>
+/* ===== AUTH OVERLAY ===== */
+#authOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.auth-card{
+  background:#fff;
+  padding:24px;
+  width:100%;
+  max-width:360px;
+  border-radius:18px;
+  text-align:center;
+}
+.auth-card h2{margin-bottom:6px}
+.auth-card input{
+  width:100%;
+  padding:12px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:1px solid #cbd5e1;
+}
+.auth-card button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn-login{background:var(--accent);color:#fff}
+.btn-sign{background:var(--success);color:#fff;margin-top:6px}
+.auth-msg{font-size:.8rem;font-weight:800;margin-top:10px}
+</style>
 </head>
 
 <body>
-  <div class="hover-edge" aria-hidden="true"></div>
 
-  <aside class="sidebar" role="navigation" aria-label="Menu">
-    <div class="sidebar-header">
-      <div class="brand-dot" aria-hidden="true"></div>
-      <div class="brand-title">
-        <div class="name">HIROCROSS Plan</div>
-        <div class="sub">One File • Full Suite</div>
-      </div>
-      <button class="pin-btn" id="pinBtn" type="button">PIN</button>
-    </div>
+<!-- AUTH -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <h2>HIROCROSS PLAN</h2>
+    <p style="font-size:.8rem;color:#64748b">Login / Daftar</p>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button class="btn-login" onclick="login()">LOGIN</button>
+    <button class="btn-sign" onclick="signup()">DAFTAR</button>
+    <div id="authMsg" class="auth-msg"></div>
+  </div>
+</div>
 
-    <div class="nav">
-      <div class="group-label">Halaman</div>
+<header>
+  <div class="brand">
+    <img src="./Hirocross-logo.png">
+    <h1>HIROCROSS</h1>
+  </div>
+  <button onclick="logout()" style="background:#ef4444;color:#fff;border:none;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer">LOGOUT</button>
+</header>
 
-      <button class="nav-btn active" data-target="setup" type="button">
-        <span class="icon">S</span>
-        <span class="txt"><span class="t">Setup</span><span class="d">Program & kalender</span></span>
-      </button>
+<div class="app-shell">
 
-      <button class="nav-btn" data-target="annual" type="button">
-        <span class="icon">A</span>
-        <span class="txt"><span class="t">Annual Plan</span><span class="d">Mingguan & fase</span></span>
-      </button>
-
-      <button class="nav-btn" data-target="monthly" type="button">
-        <span class="icon">B</span>
-        <span class="txt"><span class="t">Bulanan</span><span class="d">Mesocycle</span></span>
-      </button>
-
-      <button class="nav-btn" data-target="monitoring" type="button">
-        <span class="icon">M</span>
-        <span class="txt"><span class="t">Monitoring</span><span class="d">Load & readiness</span></span>
-      </button>
-
-      <button class="nav-btn" data-target="testing" type="button">
-        <span class="icon">T</span>
-        <span class="txt"><span class="t">Tes & Pengukuran</span><span class="d">Skor & radar</span></span>
-      </button>
-
-      <div class="group-label">Akun</div>
-
-      <button class="nav-btn" id="btnOpenAuth" type="button" onclick="openAuth()">
-        <span class="icon">🔒</span>
-        <span class="txt"><span class="t">Login</span><span class="d">Masuk / Daftar</span></span>
-      </button>
-
-      <button class="nav-btn" id="btnLogout" type="button" onclick="doLogout()">
-        <span class="icon">⎋</span>
-        <span class="txt"><span class="t">Logout</span><span class="d">Keluar akun</span></span>
-      </button>
-    </div>
-
-    <div class="sidebar-footer">
-      <span class="badge"><i></i> Status: <span id="authStatus">Guest</span></span>
-      <span class="muted" id="programStatus">Program: -</span>
-    </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>MENU</h3>
+    <button class="active" onclick="show('setup',this)">SETUP</button>
+    <button onclick="show('annual',this)">ANNUAL PLAN</button>
+    <button onclick="show('monthly',this)">BULANAN</button>
+    <button onclick="show('monitor',this)">MONITORING</button>
+    <button onclick="show('test',this)">TES & PENGUKURAN</button>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
-    <div class="topbar">
-      <div class="page-title">
-        <h1 id="pageH1">Setup</h1>
-        <p id="pageDesc">Konfigurasi awal program latihan dan kalender kompetisi.</p>
-      </div>
 
-      <div class="quick-actions">
-        <span class="pill">Sidebar: <b id="pinState">Hover</b></span>
-        <span class="pill">User: <b id="userEmail">-</b></span>
-
-        <!-- Tombol TOPBAR: login/logout selalu bisa diklik -->
-        <button class="btn" type="button" onclick="openAuth()">Login</button>
-        <button class="btn danger" type="button" onclick="doLogout()">Logout</button>
-
-        <button class="btn" id="btnReloadAll" type="button">Reload Data</button>
-      </div>
-    </div>
-
-    <!-- SETUP -->
-    <section id="sec-setup" class="section active">
-      <div class="grid cols-2">
-        <div class="card">
-          <h2>Setup Program</h2>
-          <p>Isi Setup dulu. Setelah itu Annual/Bulanan/Monitoring/Tes akan tersimpan per program & per akun.</p>
-
-          <div class="form">
-            <div class="row cols-2">
-              <label>Nama Program / Tim
-                <input id="setupProgramName" placeholder="Contoh: HIROCROSS - Cycling Endurance" />
-              </label>
-              <label>Cabor
-                <select id="setupSport">
-                  <option value="cycling">Cycling</option>
-                  <option value="running">Running</option>
-                  <option value="archery">Archery</option>
-                  <option value="combat">Combat Sports</option>
-                  <option value="other">Lainnya</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="row cols-3">
-              <label>Tanggal Mulai Program
-                <input id="setupStartDate" type="date" />
-              </label>
-              <label>Tanggal Kompetisi Utama
-                <input id="setupMainEventDate" type="date" />
-              </label>
-              <label>Model Periodisasi
-                <select id="setupPeriodization">
-                  <option value="linear">Linear</option>
-                  <option value="block">Block</option>
-                  <option value="undulating">Undulating</option>
-                </select>
-              </label>
-            </div>
-
-            <label>Catatan (opsional)
-              <textarea id="setupNotes" placeholder="Contoh: fokus base aerobic 6 minggu, lalu build..."></textarea>
-            </label>
-
-            <div class="row cols-2">
-              <button class="btn primary" id="btnSaveSetup" type="button">Save Setup</button>
-              <button class="btn" id="btnLoadSetup" type="button">Load Setup</button>
-            </div>
-
-            <div class="hint">Jika Save/Load tidak bekerja, pastikan sudah Login dan SQL schema + RLS sudah dijalankan di .</div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Ringkasan</h2>
-          <p>Ringkasan ini otomatis berubah setelah Save/Load.</p>
-
-          <div style="margin-top:12px; display:grid; gap:10px;">
-            <div class="pill">Program: <b id="sumProgram">-</b></div>
-            <div class="pill">Cabor: <b id="sumSport">-</b></div>
-            <div class="pill">Mulai: <b id="sumStart">-</b></div>
-            <div class="pill">Kompetisi: <b id="sumEvent">-</b></div>
-            <div class="pill">Periodisasi: <b id="sumPeriod">-</b></div>
-          </div>
-
-          <div class="hr"></div>
-          <p class="muted"><b>Keamanan:</b> Data per user (RLS). User lain tidak bisa melihat data Anda.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ANNUAL -->
-    <section id="sec-annual" class="section">
+    <section id="setup" class="section active">
       <div class="card">
-        <h2>Annual Plan (Mingguan)</h2>
-        <p>Isi volume% dan intensitas% per minggu. Planned load sederhana untuk monitoring rencana.</p>
-
-        <div class="form">
-          <div class="row cols-4">
-            <label>Jumlah Minggu
-              <input id="annualWeeksCount" type="number" min="4" max="60" value="24" />
-            </label>
-            <label>Default Phase
-              <select id="annualDefaultPhase">
-                <option>Base</option><option>Build</option><option>Peak</option><option>Taper</option>
-              </select>
-            </label>
-            <label>Default Focus
-              <input id="annualDefaultFocus" placeholder="Contoh: Aerobic Base" />
-            </label>
-            <label>&nbsp;
-              <button class="btn primary" id="btnAnnualGenerate" type="button">Generate Weeks</button>
-            </label>
-          </div>
-
-          <div class="row cols-2">
-            <button class="btn primary" id="btnAnnualSaveAll" type="button">Save Annual Plan</button>
-            <button class="btn" id="btnAnnualLoad" type="button">Load Annual Plan</button>
-          </div>
-        </div>
-
-        <div style="margin-top:12px; overflow:auto;">
-          <table id="annualTable">
-            <thead>
-              <tr>
-                <th>Week</th>
-                <th>Phase</th>
-                <th>Focus</th>
-                <th>Volume %</th>
-                <th>Intensity %</th>
-                <th>Planned Load</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <p class="muted" style="margin-top:10px;">
-          Planned Load = round((Volume% × 0.6) + (Intensity% × 0.4)) × 10.
-        </p>
+        <h2>Setup Program</h2>
+        <p>Parameter dasar program latihan.</p>
       </div>
     </section>
 
-    <!-- MONTHLY -->
-    <section id="sec-monthly" class="section">
-      <div class="grid cols-2">
-        <div class="card">
-          <h2>Rencana Bulanan</h2>
-          <p>Masukkan tujuan dan fokus per bulan. Disimpan per periode tahun-bulan.</p>
-
-          <div class="form">
-            <div class="row cols-3">
-              <label>Tahun
-                <input id="monthlyYear" type="number" value="2025" />
-              </label>
-              <label>Bulan
-                <select id="monthlyMonth">
-                  <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option><option value="4">April</option>
-                  <option value="5">Mei</option><option value="6">Juni</option><option value="7">Juli</option><option value="8">Agustus</option>
-                  <option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
-                </select>
-              </label>
-              <label>Fokus Bulan
-                <input id="monthlyFocus" placeholder="Contoh: Strength Endurance" />
-              </label>
-            </div>
-
-            <label>Tujuan Bulan
-              <textarea id="monthlyGoal" placeholder="Contoh: meningkatkan base aerobic dan teknik..."></textarea>
-            </label>
-            <label>Catatan
-              <textarea id="monthlyNotes" placeholder="Opsional"></textarea>
-            </label>
-
-            <div class="row cols-2">
-              <button class="btn primary" id="btnMonthlySave" type="button">Save Bulanan</button>
-              <button class="btn" id="btnMonthlyLoad" type="button">Load Bulanan</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Daftar Bulanan</h2>
-          <p>Ringkasan bulanan yang sudah tersimpan.</p>
-
-          <div style="margin-top:12px; overflow:auto;">
-            <table id="monthlyTable">
-              <thead>
-                <tr>
-                  <th>Periode</th>
-                  <th>Fokus</th>
-                  <th>Tujuan (ringkas)</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="muted" style="margin-top:10px;">Klik Reload Data untuk refresh daftar.</div>
-        </div>
+    <section id="annual" class="section">
+      <div class="card">
+        <h2>Annual Plan</h2>
+        <p>Struktur periodisasi tahunan.</p>
       </div>
     </section>
 
-    <!-- MONITORING -->
-    <section id="sec-monitoring" class="section">
-      <div class="grid cols-2">
-        <div class="card">
-          <h2>Input Monitoring Harian</h2>
-          <p>Isi session load (angka), readiness (1–5), dan catatan singkat.</p>
-
-          <div class="form">
-            <div class="row cols-3">
-              <label>Tanggal
-                <input id="monDate" type="date" />
-              </label>
-              <label>Session Load
-                <input id="monLoad" type="number" min="0" value="0" />
-              </label>
-              <label>Readiness (1–5)
-                <select id="monReady">
-                  <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option>
-                </select>
-              </label>
-            </div>
-
-            <label>Catatan
-              <textarea id="monNote" placeholder="Contoh: tidur kurang, HRV rendah..."></textarea>
-            </label>
-
-            <div class="row cols-3">
-              <button class="btn primary" id="btnMonSave" type="button">Save Monitoring</button>
-              <button class="btn" id="btnMonLoad" type="button">Load Tanggal Ini</button>
-              <button class="btn danger" id="btnMonDelete" type="button">Delete Tanggal Ini</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h2>Log Terbaru</h2>
-          <p>10 data terbaru. Klik baris untuk load ke form.</p>
-
-          <div style="margin-top:12px; overflow:auto;">
-            <table id="monTable">
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Load</th>
-                  <th>Readiness</th>
-                  <th>Note (ringkas)</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="muted" style="margin-top:10px;">Jika kosong, klik Reload Data.</div>
-        </div>
+    <section id="monthly" class="section">
+      <div class="card">
+        <h2>Bulanan</h2>
+        <p>Kalender latihan bulanan.</p>
       </div>
     </section>
 
-    <!-- TESTING -->
-    <section id="sec-testing" class="section">
-      <div class="grid cols-2">
-        <div class="card">
-          <h2>Tes & Pengukuran</h2>
-          <p>Input tes dan skor 1–5. Radar menampilkan rata-rata skor per kategori.</p>
+    <section id="monitor" class="section">
+      <div class="card">
+        <h2>Monitoring</h2>
+        <p>Analisis & dashboard performa.</p>
+      </div>
+    </section>
 
-          <div class="form">
-            <div class="row cols-3">
-              <label>Tanggal Tes
-                <input id="testDate" type="date" />
-              </label>
-              <label>Kategori
-                <select id="testCategory">
-                  <option value="endurance">Daya Tahan</option>
-                  <option value="speed">Kecepatan</option>
-                  <option value="strength">Kekuatan</option>
-                  <option value="power">Power</option>
-                  <option value="flex">Fleksibilitas</option>
-                  <option value="agility">Kelincahan</option>
-                </select>
-              </label>
-              <label>Skor (1–5)
-                <select id="testScore">
-                  <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="row cols-2">
-              <label>Nama Tes
-                <input id="testName" placeholder="Contoh: Yo-Yo IR1 / 30m sprint / 1RM squat" />
-              </label>
-              <label>Hasil
-                <input id="testResult" placeholder="Contoh: 16.2 / 4.12s / 120kg" />
-              </label>
-            </div>
-
-            <label>Catatan
-              <textarea id="testNotes" placeholder="Opsional"></textarea>
-            </label>
-
-            <div class="row cols-3">
-              <button class="btn primary" id="btnTestSave" type="button">Save Tes</button>
-              <button class="btn" id="btnTestReload" type="button">Reload List</button>
-              <button class="btn danger" id="btnTestDeleteSelected" type="button">Delete Terpilih</button>
-            </div>
-          </div>
-
-          <div class="hr"></div>
-
-          <div style="overflow:auto;">
-            <table id="testTable">
-              <thead>
-                <tr>
-                  <th>Pilih</th>
-                  <th>Tanggal</th>
-                  <th>Kategori</th>
-                  <th>Nama Tes</th>
-                  <th>Hasil</th>
-                  <th>Skor</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-
-          <div class="muted" style="margin-top:10px;">Pilih checkbox lalu Delete Terpilih.</div>
-        </div>
-
-        <div class="card">
-          <h2>Radar (Skor 1–5)</h2>
-          <p>Rata-rata skor per kategori dari data tes yang tersimpan.</p>
-          <div style="margin-top:12px;">
-            <canvas id="radarCanvas" height="260"></canvas>
-          </div>
-        </div>
+    <section id="test" class="section">
+      <div class="card">
+        <h2>Tes & Pengukuran</h2>
+        <p>Input dan analisis tes fisik.</p>
       </div>
     </section>
 
   </main>
+</div>
+
+<script>
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ===== AUTH ===== */
+function msg(t,c="#ef4444"){
+  const m=document.getElementById("authMsg");
+  m.style.color=c;m.innerText=t;
+}
+
+async function login(){
+  const email=emailEl.value,password=passEl.value;
+  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error) msg(error.message);
+}
+
+async function signup(){
+  const email=emailEl.value,password=passEl.value;
+  const {error}=await supabaseClient.auth.signUp({email,password});
+  if(error) msg(error.message);
+  else msg("Akun dibuat, silakan login","#10b981");
+}
+
+async function logout(){
+  await supabaseClient.auth.signOut();
+}
+
+const emailEl=document.getElementById("email");
+const passEl=document.getElementById("password");
+
+supabaseClient.auth.onAuthStateChange((_,session)=>{
+  document.getElementById("authOverlay").style.display=session?"none":"flex";
+});
+</script>
 
-  <!-- AUTH MODAL -->
-  <div class="modal" id="authModal" aria-hidden="true">
-    <div class="modal-card">
-      <h3>Login / Daftar</h3>
-      <p>Masukkan email & password. Setelah login, data tersimpan per akun.</p>
-
-      <div class="form">
-        <div class="row cols-2">
-          <label>Email
-            <input id="authEmail" type="email" placeholder="email@domain.com" />
-          </label>
-          <label>Password
-            <input id="authPass" type="password" placeholder="minimal 6 karakter" />
-          </label>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn" type="button" onclick="closeAuth()">Tutup</button>
-          <button class="btn" id="btnSignup" type="button">Daftar</button>
-          <button class="btn primary" id="btnLogin" type="button">Login</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div class="toast" id="toast">
-    <div class="inner">
-      <span class="dot"></span>
-      <div>
-        <p class="t" id="toastT">Info</p>
-        <p class="d" id="toastD">-</p>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // =========================================================
-    // 1) SUPABASE CONFIG (WAJIB DIGANTI)
-    // =========================================================
-    const SUPABASE_URL = "https://urifesrbfoutokrmxnwu.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_rrLX0bFQkHYsrgQAiVJRnw_UhdiLe8S";
-
-    function isConfigValid(){
-      return (
-        typeof SUPABASE_URL === "string" &&
-        SUPABASE_URL.startsWith("https://") &&
-        SUPABASE_URL.includes(".supabase.co") &&
-        typeof SUPABASE_ANON_KEY === "string" &&
-        SUPABASE_ANON_KEY.length > 20
-      );
-    }
-
-    // PENTING: jangan pakai nama variabel "supabase" agar tidak bentrok
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // =========================================================
-    // 2) TOAST
-    // =========================================================
-    let toastTimer = null;
-    function toast(title, desc){
-      const el = document.getElementById("toast");
-      document.getElementById("toastT").textContent = title || "Info";
-      document.getElementById("toastD").textContent = desc || "";
-      el.classList.add("show");
-      if(toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(()=> el.classList.remove("show"), 2800);
-    }
-
-    // =========================================================
-    // 3) NAV + PIN
-    // =========================================================
-    const meta = {
-      setup: { h1:"Setup", desc:"Konfigurasi awal program latihan dan kalender kompetisi." },
-      annual:{ h1:"Annual Plan", desc:"Isi target mingguan dan fase periodisasi." },
-      monthly:{ h1:"Bulanan", desc:"Rencana mesocycle per bulan (goal/focus)." },
-      monitoring:{ h1:"Monitoring", desc:"Input load dan readiness harian." },
-      testing:{ h1:"Tes & Pengukuran", desc:"Input tes, skor, dan radar per kategori." }
-    };
-
-    const navBtns = Array.from(document.querySelectorAll(".nav-btn[data-target]"));
-    const sections = {
-      setup: document.getElementById("sec-setup"),
-      annual: document.getElementById("sec-annual"),
-      monthly: document.getElementById("sec-monthly"),
-      monitoring: document.getElementById("sec-monitoring"),
-      testing: document.getElementById("sec-testing"),
-    };
-
-    const pageH1 = document.getElementById("pageH1");
-    const pageDesc = document.getElementById("pageDesc");
-
-    function setActivePage(key){
-      navBtns.forEach(b => b.classList.toggle("active", b.dataset.target === key));
-      Object.keys(sections).forEach(k => sections[k].classList.toggle("active", k === key));
-      pageH1.textContent = meta[key]?.h1 || "Halaman";
-      pageDesc.textContent = meta[key]?.desc || "";
-      localStorage.setItem("hc_active_page", key);
-    }
-
-    navBtns.forEach(btn => btn.addEventListener("click", ()=> setActivePage(btn.dataset.target)));
-
-    const pinBtn = document.getElementById("pinBtn");
-    const pinState = document.getElementById("pinState");
-
-    function applyPinned(isPinned){
-      document.body.classList.toggle("sidebar-pinned", isPinned);
-      localStorage.setItem("hc_sidebar_pinned", isPinned ? "1" : "0");
-      pinBtn.textContent = isPinned ? "UNPIN" : "PIN";
-      pinState.textContent = isPinned ? "Pinned" : "Hover";
-    }
-    pinBtn.addEventListener("click", ()=>{
-      applyPinned(!document.body.classList.contains("sidebar-pinned"));
-    });
-    applyPinned(localStorage.getItem("hc_sidebar_pinned") === "1");
-
-    const last = localStorage.getItem("hc_active_page");
-    if(last && sections[last]) setActivePage(last);
-
-    // =========================================================
-    // 4) AUTH MODAL (ROBUST)
-    // =========================================================
-    const authModal = document.getElementById("authModal");
-    const authStatus = document.getElementById("authStatus");
-    const userEmail = document.getElementById("userEmail");
-    const programStatus = document.getElementById("programStatus");
-
-    function openAuth(){
-      if(!isConfigValid()){
-        toast("Konfigurasi Supabase", "Ganti SUPABASE_URL & SUPABASE_ANON_KEY dulu (Project URL + Publishable key).");
-        return;
-      }
-      authModal.classList.add("show");
-    }
-    function closeAuth(){
-      authModal.classList.remove("show");
-    }
-    window.openAuth = openAuth;
-    window.closeAuth = closeAuth;
-
-    authModal.addEventListener("click", (e)=>{ if(e.target === authModal) closeAuth(); });
-
-    let CURRENT_USER = null;
-    let CURRENT_PROGRAM = null;
-
-    async function refreshSession(){
-      const { data } = await sb.auth.getSession();
-      CURRENT_USER = data?.session?.user || null;
-
-      if(CURRENT_USER){
-        authStatus.textContent = "Logged in";
-        userEmail.textContent = CURRENT_USER.email || "-";
-      } else {
-        authStatus.textContent = "Guest";
-        userEmail.textContent = "-";
-      }
-    }
-
-    // =========================================================
-    // 5) HELPERS
-    // =========================================================
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function clampInt(v, min, max){
-      const n = Number(v);
-      if(Number.isNaN(n)) return min;
-      return Math.max(min, Math.min(max, Math.round(n)));
-    }
-
-    function fmtDateID(v){
-      if(!v) return "-";
-      const d = new Date(v + "T00:00:00");
-      if(isNaN(d.getTime())) return v;
-      return d.toLocaleDateString("id-ID", { weekday:"long", year:"numeric", month:"long", day:"2-digit" });
-    }
-
-    function shortText(s, n=42){
-      s = (s||"").trim();
-      if(!s) return "-";
-      return s.length > n ? s.slice(0,n-1) + "…" : s;
-    }
-
-    function requireLogin(){
-      if(!CURRENT_USER){
-        openAuth();
-        toast("Butuh Login", "Silakan login terlebih dahulu.");
-        return false;
-      }
-      return true;
-    }
-
-    async function getOrCreateProgram(){
-      const { data: rows, error } = await sb
-        .from("hc_programs")
-        .select("*")
-        .order("updated_at", { ascending:false })
-        .limit(1);
-
-      if(error) throw error;
-
-      if(rows && rows.length) return rows[0];
-
-      const { data: created, error: e2 } = await sb
-        .from("hc_programs")
-        .insert([{
-          user_id: CURRENT_USER.id,
-          program_name: "",
-          sport: "cycling",
-          periodization: "linear",
-          notes: ""
-        }])
-        .select("*")
-        .single();
-
-      if(e2) throw e2;
-      return created;
-    }
-
-    async function bootAfterLogin(){
-      await refreshSession();
-      if(!CURRENT_USER) return;
-
-      try{
-        CURRENT_PROGRAM = await getOrCreateProgram();
-        programStatus.textContent = "Program: " + (CURRENT_PROGRAM.program_name?.trim() || "(belum diisi)");
-        await loadSetupToUI();
-        await loadAnnualToTable();
-        await reloadMonthlyList();
-        await reloadMonitoringList();
-        await reloadTestsAndRadar();
-      }catch(e){
-        toast("Error", e.message || String(e));
-      }
-    }
-
-    // =========================================================
-    // 6) AUTH ACTIONS
-    // =========================================================
-    document.getElementById("btnSignup").addEventListener("click", async ()=>{
-      if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
-
-      const email = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPass").value;
-      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
-
-      const { error } = await sb.auth.signUp({ email, password });
-      if(error){ toast("Daftar gagal", error.message); return; }
-
-      toast("Daftar", "Berhasil. Jika Supabase minta verifikasi email, cek inbox Anda.");
-    });
-
-    document.getElementById("btnLogin").addEventListener("click", async ()=>{
-      if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
-
-      const email = document.getElementById("authEmail").value.trim();
-      const password = document.getElementById("authPass").value;
-      if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
-
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if(error){ toast("Login gagal", error.message); return; }
-
-      closeAuth();
-      await bootAfterLogin();
-      toast("Login", "Berhasil login.");
-    });
-
-    async function doLogout(){
-      try{
-        if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
-
-        const { data: sess } = await sb.auth.getSession();
-        if(!sess?.session){
-          toast("Logout", "Anda masih Guest (belum login).");
-          return;
-        }
-
-        const { error } = await sb.auth.signOut();
-        if(error) throw error;
-
-        CURRENT_USER = null;
-        CURRENT_PROGRAM = null;
-        authStatus.textContent = "Guest";
-        userEmail.textContent = "-";
-        programStatus.textContent = "Program: -";
-
-        toast("Logout", "Berhasil logout.");
-        setTimeout(()=> location.reload(), 350);
-      }catch(e){
-        toast("Logout gagal", e.message || String(e));
-      }
-    }
-    window.doLogout = doLogout;
-
-    sb.auth.onAuthStateChange(async (_event, session)=>{
-      CURRENT_USER = session?.user || null;
-      await refreshSession();
-      if(CURRENT_USER) await bootAfterLogin();
-    });
-
-    // =========================================================
-    // 7) SETUP (hc_programs)
-    // =========================================================
-    const setupProgramName = document.getElementById("setupProgramName");
-    const setupSport = document.getElementById("setupSport");
-    const setupStartDate = document.getElementById("setupStartDate");
-    const setupMainEventDate = document.getElementById("setupMainEventDate");
-    const setupPeriodization = document.getElementById("setupPeriodization");
-    const setupNotes = document.getElementById("setupNotes");
-
-    const sumProgram = document.getElementById("sumProgram");
-    const sumSport = document.getElementById("sumSport");
-    const sumStart = document.getElementById("sumStart");
-    const sumEvent = document.getElementById("sumEvent");
-    const sumPeriod = document.getElementById("sumPeriod");
-
-    function applySetupSummary(row){
-      sumProgram.textContent = row?.program_name?.trim() || "-";
-      sumSport.textContent = (row?.sport || "-").toUpperCase();
-      sumStart.textContent = fmtDateID(row?.start_date || "");
-      sumEvent.textContent = fmtDateID(row?.main_event_date || "");
-      sumPeriod.textContent = (row?.periodization || "-").toUpperCase();
-      programStatus.textContent = "Program: " + (row?.program_name?.trim() || "(belum diisi)");
-    }
-
-    async function loadSetupToUI(){
-      if(!requireLogin()) return;
-      if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-      setupProgramName.value = CURRENT_PROGRAM.program_name || "";
-      setupSport.value = CURRENT_PROGRAM.sport || "cycling";
-      setupStartDate.value = CURRENT_PROGRAM.start_date || "";
-      setupMainEventDate.value = CURRENT_PROGRAM.main_event_date || "";
-      setupPeriodization.value = CURRENT_PROGRAM.periodization || "linear";
-      setupNotes.value = CURRENT_PROGRAM.notes || "";
-
-      applySetupSummary(CURRENT_PROGRAM);
-    }
-
-    document.getElementById("btnLoadSetup").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-      await bootAfterLogin();
-      toast("Setup", "Setup dimuat.");
-    });
-
-    document.getElementById("btnSaveSetup").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const payload = {
-          program_name: setupProgramName.value.trim(),
-          sport: setupSport.value,
-          start_date: setupStartDate.value || null,
-          main_event_date: setupMainEventDate.value || null,
-          periodization: setupPeriodization.value,
-          notes: setupNotes.value.trim(),
-          updated_at: new Date().toISOString()
-        };
-
-        const { data, error } = await sb
-          .from("hc_programs")
-          .update(payload)
-          .eq("id", CURRENT_PROGRAM.id)
-          .select("*")
-          .single();
-
-        if(error) throw error;
-
-        CURRENT_PROGRAM = data;
-        applySetupSummary(CURRENT_PROGRAM);
-        toast("Setup", "Berhasil disimpan.");
-      }catch(e){
-        toast("Save gagal", e.message || String(e));
-      }
-    });
-
-    // =========================================================
-    // 8) ANNUAL (hc_annual_weeks)
-    // =========================================================
-    const annualTableBody = document.querySelector("#annualTable tbody");
-
-    function plannedLoad(volPct, intPct){
-      const v = Number(volPct||0), i = Number(intPct||0);
-      return Math.round(((v*0.6)+(i*0.4))*10);
-    }
-
-    function buildAnnualRow(weekNo, rowData=null){
-      const tr = document.createElement("tr");
-      const phase = rowData?.phase || document.getElementById("annualDefaultPhase").value || "Base";
-      const focus = rowData?.focus || document.getElementById("annualDefaultFocus").value || "";
-      const vol = rowData?.volume_pct ?? 60;
-      const inten = rowData?.intensity_pct ?? 60;
-      const notes = rowData?.notes || "";
-
-      tr.innerHTML = `
-        <td><b>W${weekNo}</b><br><small class="muted">week_no=${weekNo}</small></td>
-        <td>
-          <select data-k="phase">
-            <option ${phase==="Base"?"selected":""}>Base</option>
-            <option ${phase==="Build"?"selected":""}>Build</option>
-            <option ${phase==="Peak"?"selected":""}>Peak</option>
-            <option ${phase==="Taper"?"selected":""}>Taper</option>
-          </select>
-        </td>
-        <td><input data-k="focus" value="${escapeHtml(focus)}" placeholder="Fokus minggu ini" /></td>
-        <td><input data-k="volume_pct" type="number" min="0" max="100" value="${Number(vol)}" /></td>
-        <td><input data-k="intensity_pct" type="number" min="0" max="100" value="${Number(inten)}" /></td>
-        <td><b data-k="load">${plannedLoad(vol,inten)}</b></td>
-        <td><input data-k="notes" value="${escapeHtml(notes)}" placeholder="catatan singkat" /></td>
-      `;
-
-      const volInput = tr.querySelector('input[data-k="volume_pct"]');
-      const intInput = tr.querySelector('input[data-k="intensity_pct"]');
-      const loadEl = tr.querySelector('b[data-k="load"]');
-
-      function recalc(){ loadEl.textContent = plannedLoad(volInput.value, intInput.value); }
-      volInput.addEventListener("input", recalc);
-      intInput.addEventListener("input", recalc);
-
-      tr.dataset.weekNo = String(weekNo);
-      return tr;
-    }
-
-    function renderAnnualTable(rows){
-      annualTableBody.innerHTML = "";
-      const map = new Map();
-      (rows||[]).forEach(r => map.set(r.week_no, r));
-
-      const count = Number(document.getElementById("annualWeeksCount").value || 24);
-      for(let w=1; w<=count; w++){
-        annualTableBody.appendChild(buildAnnualRow(w, map.get(w) || null));
-      }
-    }
-
-    document.getElementById("btnAnnualGenerate").addEventListener("click", ()=>{
-      renderAnnualTable([]);
-      toast("Annual Plan", "Tabel minggu dibuat. Isi lalu Save.");
-    });
-
-    async function loadAnnualToTable(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) { renderAnnualTable([]); return; }
-
-      const { data, error } = await sb
-        .from("hc_annual_weeks")
-        .select("*")
-        .eq("program_id", CURRENT_PROGRAM.id)
-        .order("week_no", { ascending:true });
-
-      if(error){ toast("Load Annual gagal", error.message); return; }
-      renderAnnualTable(data || []);
-    }
-
-    document.getElementById("btnAnnualLoad").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-      if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-      await loadAnnualToTable();
-      toast("Annual Plan", "Data annual plan dimuat.");
-    });
-
-    document.getElementById("btnAnnualSaveAll").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const trs = Array.from(annualTableBody.querySelectorAll("tr"));
-        const payload = trs.map(tr=>{
-          const week_no = Number(tr.dataset.weekNo);
-          const phase = tr.querySelector('[data-k="phase"]').value;
-          const focus = tr.querySelector('[data-k="focus"]').value.trim();
-          const volume_pct = clampInt(tr.querySelector('[data-k="volume_pct"]').value, 0, 100);
-          const intensity_pct = clampInt(tr.querySelector('[data-k="intensity_pct"]').value, 0, 100);
-          const notes = tr.querySelector('[data-k="notes"]').value.trim();
-
-          return {
-            user_id: CURRENT_USER.id,
-            program_id: CURRENT_PROGRAM.id,
-            week_no, phase, focus, volume_pct, intensity_pct, notes,
-            updated_at: new Date().toISOString()
-          };
-        });
-
-        const { error } = await sb
-          .from("hc_annual_weeks")
-          .upsert(payload, { onConflict: "program_id,week_no" });
-
-        if(error) throw error;
-
-        toast("Annual Plan", "Berhasil disimpan.");
-      }catch(e){
-        toast("Save Annual gagal", e.message || String(e));
-      }
-    });
-
-    // =========================================================
-    // 9) MONTHLY (hc_monthly_plans)
-    // =========================================================
-    const monthlyTableBody = document.querySelector("#monthlyTable tbody");
-
-    async function reloadMonthlyList(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) { monthlyTableBody.innerHTML = ""; return; }
-
-      const { data, error } = await sb
-        .from("hc_monthly_plans")
-        .select("*")
-        .eq("program_id", CURRENT_PROGRAM.id)
-        .order("year", { ascending:false })
-        .order("month", { ascending:false })
-        .limit(24);
-
-      if(error){ toast("Monthly list gagal", error.message); return; }
-
-      monthlyTableBody.innerHTML = "";
-      (data || []).forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><b>${r.year}-${String(r.month).padStart(2,"0")}</b></td>
-          <td>${escapeHtml(r.focus || "-")}</td>
-          <td>${escapeHtml(shortText(r.goal || "-", 56))}</td>
-        `;
-        monthlyTableBody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("btnMonthlySave").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const year = clampInt(document.getElementById("monthlyYear").value, 2000, 2100);
-        const month = clampInt(document.getElementById("monthlyMonth").value, 1, 12);
-        const focus = document.getElementById("monthlyFocus").value.trim();
-        const goal = document.getElementById("monthlyGoal").value.trim();
-        const notes = document.getElementById("monthlyNotes").value.trim();
-
-        const payload = {
-          user_id: CURRENT_USER.id,
-          program_id: CURRENT_PROGRAM.id,
-          year, month, focus, goal, notes,
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await sb
-          .from("hc_monthly_plans")
-          .upsert([payload], { onConflict: "program_id,year,month" });
-
-        if(error) throw error;
-
-        toast("Bulanan", "Berhasil disimpan.");
-        await reloadMonthlyList();
-      }catch(e){
-        toast("Save Bulanan gagal", e.message || String(e));
-      }
-    });
-
-    document.getElementById("btnMonthlyLoad").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const year = clampInt(document.getElementById("monthlyYear").value, 2000, 2100);
-        const month = clampInt(document.getElementById("monthlyMonth").value, 1, 12);
-
-        const { data, error } = await sb
-          .from("hc_monthly_plans")
-          .select("*")
-          .eq("program_id", CURRENT_PROGRAM.id)
-          .eq("year", year)
-          .eq("month", month)
-          .maybeSingle();
-
-        if(error) throw error;
-
-        if(!data){
-          toast("Bulanan", "Data bulan ini belum ada.");
-          return;
-        }
-
-        document.getElementById("monthlyFocus").value = data.focus || "";
-        document.getElementById("monthlyGoal").value = data.goal || "";
-        document.getElementById("monthlyNotes").value = data.notes || "";
-        toast("Bulanan", "Data dimuat.");
-      }catch(e){
-        toast("Load Bulanan gagal", e.message || String(e));
-      }
-    });
-
-    // =========================================================
-    // 10) MONITORING (hc_monitoring_logs)
-    // =========================================================
-    const monTableBody = document.querySelector("#monTable tbody");
-
-    async function reloadMonitoringList(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) { monTableBody.innerHTML = ""; return; }
-
-      const { data, error } = await sb
-        .from("hc_monitoring_logs")
-        .select("*")
-        .eq("program_id", CURRENT_PROGRAM.id)
-        .order("log_date", { ascending:false })
-        .limit(10);
-
-      if(error){ toast("Monitoring list gagal", error.message); return; }
-
-      monTableBody.innerHTML = "";
-      (data || []).forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.style.cursor = "pointer";
-        tr.innerHTML = `
-          <td><b>${r.log_date}</b><br><small class="muted">${fmtDateID(r.log_date)}</small></td>
-          <td>${r.session_load}</td>
-          <td>${r.readiness}</td>
-          <td>${escapeHtml(shortText(r.note, 44))}</td>
-        `;
-        tr.addEventListener("click", ()=>{
-          document.getElementById("monDate").value = r.log_date;
-          document.getElementById("monLoad").value = r.session_load;
-          document.getElementById("monReady").value = String(r.readiness);
-          document.getElementById("monNote").value = r.note || "";
-          toast("Monitoring", "Data dimuat ke form dari list.");
-        });
-        monTableBody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("btnMonSave").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const log_date = document.getElementById("monDate").value;
-        if(!log_date){ toast("Monitoring", "Tanggal wajib diisi."); return; }
-
-        const session_load = clampInt(document.getElementById("monLoad").value, 0, 999999);
-        const readiness = clampInt(document.getElementById("monReady").value, 1, 5);
-        const note = document.getElementById("monNote").value.trim();
-
-        const payload = {
-          user_id: CURRENT_USER.id,
-          program_id: CURRENT_PROGRAM.id,
-          log_date, session_load, readiness, note,
-          updated_at: new Date().toISOString()
-        };
-
-        const { error } = await sb
-          .from("hc_monitoring_logs")
-          .upsert([payload], { onConflict: "program_id,log_date" });
-
-        if(error) throw error;
-
-        toast("Monitoring", "Berhasil disimpan.");
-        await reloadMonitoringList();
-      }catch(e){
-        toast("Save Monitoring gagal", e.message || String(e));
-      }
-    });
-
-    document.getElementById("btnMonLoad").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const log_date = document.getElementById("monDate").value;
-        if(!log_date){ toast("Monitoring", "Tanggal wajib diisi."); return; }
-
-        const { data, error } = await sb
-          .from("hc_monitoring_logs")
-          .select("*")
-          .eq("program_id", CURRENT_PROGRAM.id)
-          .eq("log_date", log_date)
-          .maybeSingle();
-
-        if(error) throw error;
-
-        if(!data){ toast("Monitoring", "Data tanggal ini belum ada."); return; }
-
-        document.getElementById("monLoad").value = data.session_load;
-        document.getElementById("monReady").value = String(data.readiness);
-        document.getElementById("monNote").value = data.note || "";
-        toast("Monitoring", "Data dimuat.");
-      }catch(e){
-        toast("Load Monitoring gagal", e.message || String(e));
-      }
-    });
-
-    document.getElementById("btnMonDelete").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const log_date = document.getElementById("monDate").value;
-        if(!log_date){ toast("Monitoring", "Tanggal wajib diisi."); return; }
-
-        const { error } = await sb
-          .from("hc_monitoring_logs")
-          .delete()
-          .eq("program_id", CURRENT_PROGRAM.id)
-          .eq("log_date", log_date);
-
-        if(error) throw error;
-
-        toast("Monitoring", "Data dihapus.");
-        await reloadMonitoringList();
-      }catch(e){
-        toast("Delete gagal", e.message || String(e));
-      }
-    });
-
-    // =========================================================
-    // 11) TESTS + RADAR (hc_tests)
-    // =========================================================
-    const testTableBody = document.querySelector("#testTable tbody");
-    let radarChart = null;
-
-    function categoryLabel(k){
-      return ({
-        endurance:"Daya Tahan",
-        speed:"Kecepatan",
-        strength:"Kekuatan",
-        power:"Power",
-        flex:"Fleksibilitas",
-        agility:"Kelincahan"
-      })[k] || k;
-    }
-
-    function renderRadar(labels, values){
-      const ctx = document.getElementById("radarCanvas").getContext("2d");
-      if(radarChart) radarChart.destroy();
-
-      radarChart = new Chart(ctx, {
-        type: "radar",
-        data: {
-          labels,
-          datasets: [{
-            label: "Skor rata-rata",
-            data: values,
-            fill: true
-          }]
-        },
-        options: {
-          scales: {
-            r: {
-              suggestedMin: 0,
-              suggestedMax: 5,
-              ticks: { stepSize: 1 }
-            }
-          },
-          plugins: { legend: { display: true } }
-        }
-      });
-    }
-
-    async function reloadTestsAndRadar(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) {
-        testTableBody.innerHTML = "";
-        renderRadar(
-          ["Daya Tahan","Kecepatan","Kekuatan","Power","Fleksibilitas","Kelincahan"],
-          [0,0,0,0,0,0]
-        );
-        return;
-      }
-
-      const { data, error } = await sb
-        .from("hc_tests")
-        .select("*")
-        .eq("program_id", CURRENT_PROGRAM.id)
-        .order("test_date", { ascending:false })
-        .limit(200);
-
-      if(error){ toast("Load tes gagal", error.message); return; }
-
-      testTableBody.innerHTML = "";
-      (data || []).forEach(r=>{
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><input type="checkbox" data-id="${r.id}"></td>
-          <td><b>${r.test_date}</b></td>
-          <td>${escapeHtml(categoryLabel(r.category))}</td>
-          <td>${escapeHtml(r.test_name)}</td>
-          <td>${escapeHtml(r.result_value || "")}</td>
-          <td><b>${r.score}</b></td>
-        `;
-        testTableBody.appendChild(tr);
-      });
-
-      const cats = ["endurance","speed","strength","power","flex","agility"];
-      const sums = Object.fromEntries(cats.map(c=>[c, {sum:0, n:0}]));
-      (data || []).forEach(r=>{
-        if(sums[r.category]){
-          sums[r.category].sum += Number(r.score||0);
-          sums[r.category].n += 1;
-        }
-      });
-
-      const labels = cats.map(categoryLabel);
-      const values = cats.map(c => sums[c].n ? (sums[c].sum / sums[c].n) : 0);
-      renderRadar(labels, values);
-    }
-
-    document.getElementById("btnTestSave").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        if(!CURRENT_PROGRAM) CURRENT_PROGRAM = await getOrCreateProgram();
-
-        const test_date = document.getElementById("testDate").value;
-        if(!test_date){ toast("Tes", "Tanggal tes wajib diisi."); return; }
-
-        const category = document.getElementById("testCategory").value;
-        const test_name = document.getElementById("testName").value.trim();
-        if(!test_name){ toast("Tes", "Nama tes wajib diisi."); return; }
-
-        const result_value = document.getElementById("testResult").value.trim();
-        const score = clampInt(document.getElementById("testScore").value, 1, 5);
-        const notes = document.getElementById("testNotes").value.trim();
-
-        const payload = {
-          user_id: CURRENT_USER.id,
-          program_id: CURRENT_PROGRAM.id,
-          test_date, category, test_name,
-          result_value, score, notes
-        };
-
-        const { error } = await sb.from("hc_tests").insert([payload]);
-        if(error) throw error;
-
-        toast("Tes", "Data tes disimpan.");
-        await reloadTestsAndRadar();
-      }catch(e){
-        toast("Save tes gagal", e.message || String(e));
-      }
-    });
-
-    document.getElementById("btnTestReload").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-      await reloadTestsAndRadar();
-      toast("Tes", "List tes di-refresh.");
-    });
-
-    document.getElementById("btnTestDeleteSelected").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-
-      try{
-        const ids = Array.from(testTableBody.querySelectorAll('input[type="checkbox"][data-id]:checked'))
-          .map(x => x.getAttribute("data-id"))
-          .filter(Boolean);
-
-        if(!ids.length){ toast("Tes", "Tidak ada yang dipilih."); return; }
-
-        const { error } = await sb
-          .from("hc_tests")
-          .delete()
-          .in("id", ids);
-
-        if(error) throw error;
-
-        toast("Tes", "Data terpilih dihapus.");
-        await reloadTestsAndRadar();
-      }catch(e){
-        toast("Delete tes gagal", e.message || String(e));
-      }
-    });
-
-    // =========================================================
-    // 12) GLOBAL RELOAD
-    // =========================================================
-    document.getElementById("btnReloadAll").addEventListener("click", async ()=>{
-      if(!requireLogin()) return;
-      await loadAnnualToTable();
-      await reloadMonthlyList();
-      await reloadMonitoringList();
-      await reloadTestsAndRadar();
-      toast("Reload", "Semua data di-refresh.");
-    });
-
-    // =========================================================
-    // 13) INIT
-    // =========================================================
-    (async function init(){
-      if(!isConfigValid()){
-        toast("Konfigurasi", "Ganti SUPABASE_URL & SUPABASE_ANON_KEY terlebih dahulu.");
-      }
-
-      await refreshSession();
-
-      if(CURRENT_USER){
-        await bootAfterLogin();
-      } else {
-        renderAnnualTable([]);
-        renderRadar(
-          ["Daya Tahan","Kecepatan","Kekuatan","Power","Fleksibilitas","Kelincahan"],
-          [0,0,0,0,0,0]
-        );
-      }
-    })();
-  </script>
-
-  <!-- =========================================================
-       SQL SCHEMA + RLS (JALANKAN DI SUPABASE SQL EDITOR)
-       =========================================================
-
-  create table if not exists public.hc_programs (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid not null,
-    program_name text not null default '',
-    sport text not null default 'cycling',
-    start_date date,
-    main_event_date date,
-    periodization text not null default 'linear',
-    notes text not null default '',
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now()
-  );
-
-  create table if not exists public.hc_annual_weeks (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid not null,
-    program_id uuid not null references public.hc_programs(id) on delete cascade,
-    week_no int not null,
-    phase text not null default 'Base',
-    focus text not null default '',
-    volume_pct int not null default 60,
-    intensity_pct int not null default 60,
-    notes text not null default '',
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    unique(program_id, week_no)
-  );
-
-  create table if not exists public.hc_monthly_plans (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid not null,
-    program_id uuid not null references public.hc_programs(id) on delete cascade,
-    year int not null,
-    month int not null,
-    goal text not null default '',
-    focus text not null default '',
-    notes text not null default '',
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    unique(program_id, year, month)
-  );
-
-  create table if not exists public.hc_monitoring_logs (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid not null,
-    program_id uuid not null references public.hc_programs(id) on delete cascade,
-    log_date date not null,
-    session_load int not null default 0,
-    readiness int not null default 3,
-    note text not null default '',
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now(),
-    unique(program_id, log_date)
-  );
-
-  create table if not exists public.hc_tests (
-    id uuid primary key default gen_random_uuid(),
-    user_id uuid not null,
-    program_id uuid not null references public.hc_programs(id) on delete cascade,
-    test_date date not null,
-    category text not null,
-    test_name text not null,
-    result_value text not null default '',
-    score int not null default 3,
-    notes text not null default '',
-    created_at timestamptz not null default now(),
-    updated_at timestamptz not null default now()
-  );
-
-  alter table public.hc_programs enable row level security;
-  alter table public.hc_annual_weeks enable row level security;
-  alter table public.hc_monthly_plans enable row level security;
-  alter table public.hc_monitoring_logs enable row level security;
-  alter table public.hc_tests enable row level security;
-
-  drop policy if exists "hc_programs_select" on public.hc_programs;
-  drop policy if exists "hc_programs_insert" on public.hc_programs;
-  drop policy if exists "hc_programs_update" on public.hc_programs;
-  drop policy if exists "hc_programs_delete" on public.hc_programs;
-
-  drop policy if exists "hc_annual_weeks_select" on public.hc_annual_weeks;
-  drop policy if exists "hc_annual_weeks_insert" on public.hc_annual_weeks;
-  drop policy if exists "hc_annual_weeks_update" on public.hc_annual_weeks;
-  drop policy if exists "hc_annual_weeks_delete" on public.hc_annual_weeks;
-
-  drop policy if exists "hc_monthly_plans_select" on public.hc_monthly_plans;
-  drop policy if exists "hc_monthly_plans_insert" on public.hc_monthly_plans;
-  drop policy if exists "hc_monthly_plans_update" on public.hc_monthly_plans;
-  drop policy if exists "hc_monthly_plans_delete" on public.hc_monthly_plans;
-
-  drop policy if exists "hc_monitoring_logs_select" on public.hc_monitoring_logs;
-  drop policy if exists "hc_monitoring_logs_insert" on public.hc_monitoring_logs;
-  drop policy if exists "hc_monitoring_logs_update" on public.hc_monitoring_logs;
-  drop policy if exists "hc_monitoring_logs_delete" on public.hc_monitoring_logs;
-
-  drop policy if exists "hc_tests_select" on public.hc_tests;
-  drop policy if exists "hc_tests_insert" on public.hc_tests;
-  drop policy if exists "hc_tests_update" on public.hc_tests;
-  drop policy if exists "hc_tests_delete" on public.hc_tests;
-
-  create policy "hc_programs_select" on public.hc_programs for select using (auth.uid() = user_id);
-  create policy "hc_programs_insert" on public.hc_programs for insert with check (auth.uid() = user_id);
-  create policy "hc_programs_update" on public.hc_programs for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  create policy "hc_programs_delete" on public.hc_programs for delete using (auth.uid() = user_id);
-
-  create policy "hc_annual_weeks_select" on public.hc_annual_weeks for select using (auth.uid() = user_id);
-  create policy "hc_annual_weeks_insert" on public.hc_annual_weeks for insert with check (auth.uid() = user_id);
-  create policy "hc_annual_weeks_update" on public.hc_annual_weeks for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  create policy "hc_annual_weeks_delete" on public.hc_annual_weeks for delete using (auth.uid() = user_id);
-
-  create policy "hc_monthly_plans_select" on public.hc_monthly_plans for select using (auth.uid() = user_id);
-  create policy "hc_monthly_plans_insert" on public.hc_monthly_plans for insert with check (auth.uid() = user_id);
-  create policy "hc_monthly_plans_update" on public.hc_monthly_plans for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  create policy "hc_monthly_plans_delete" on public.hc_monthly_plans for delete using (auth.uid() = user_id);
-
-  create policy "hc_monitoring_logs_select" on public.hc_monitoring_logs for select using (auth.uid() = user_id);
-  create policy "hc_monitoring_logs_insert" on public.hc_monitoring_logs for insert with check (auth.uid() = user_id);
-  create policy "hc_monitoring_logs_update" on public.hc_monitoring_logs for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  create policy "hc_monitoring_logs_delete" on public.hc_monitoring_logs for delete using (auth.uid() = user_id);
-
-  create policy "hc_tests_select" on public.hc_tests for select using (auth.uid() = user_id);
-  create policy "hc_tests_insert" on public.hc_tests for insert with check (auth.uid() = user_id);
-  create policy "hc_tests_update" on public.hc_tests for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
-  create policy "hc_tests_delete" on public.hc_tests for delete using (auth.uid() = user_id);
-
-  ========================================================= -->
 </body>
 </html>
-
-
