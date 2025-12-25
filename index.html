@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HIROCROSS Plan • One File (Supabase Full)</title>
+  <title>HIROCROSS Plan • One File (Supabase)</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -24,7 +24,6 @@
       --radius: 16px;
       --shadow: 0 10px 30px rgba(2,6,23,.10);
     }
-
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
@@ -34,15 +33,12 @@
       background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 40%, #fff 100%);
     }
 
-    /* LEFT HOVER EDGE */
     .hover-edge{
       position:fixed; left:0; top:0;
       height:100vh; width:var(--sidebar-edge);
       z-index:50;
       background: transparent;
     }
-
-    /* SIDEBAR */
     .sidebar{
       position:fixed; left:0; top:0;
       height:100vh; width:var(--sidebar-w);
@@ -56,26 +52,22 @@
       box-shadow: 10px 0 30px rgba(2,6,23,.18);
       display:flex; flex-direction:column;
     }
-
     .hover-edge:hover + .sidebar,
     .sidebar:hover,
     body.sidebar-pinned .sidebar{
       transform: translateX(0);
     }
-
     .sidebar-header{
       display:flex; align-items:center; gap:12px;
       padding:18px 16px 14px;
       border-bottom:1px solid rgba(148,163,184,.15);
     }
-
     .brand-dot{
       width:42px; height:42px; border-radius:14px;
       background: radial-gradient(circle at 30% 30%, #60a5fa 0%, #2563eb 35%, #0ea5e9 100%);
       box-shadow: 0 8px 20px rgba(37,99,235,.35);
       flex:0 0 auto;
     }
-
     .brand-title{ display:flex; flex-direction:column; line-height:1.1; }
     .brand-title .name{ color:#fff; font-weight:800; letter-spacing:.2px; }
     .brand-title .sub{ color: rgba(226,232,240,.82); font-size:12px; margin-top:4px; }
@@ -107,7 +99,6 @@
       color: rgba(148,163,184,.85);
       text-transform:uppercase;
     }
-
     .nav-btn{
       display:flex; align-items:center; gap:10px;
       width:100%;
@@ -129,7 +120,6 @@
       background: rgba(37,99,235,.30);
       border-color: rgba(96,165,250,.28);
     }
-
     .nav-btn .icon{
       width:30px; height:30px;
       border-radius:12px;
@@ -140,7 +130,6 @@
       flex:0 0 auto;
     }
     .nav-btn.active .icon{ background: rgba(37,99,235,.50); }
-
     .nav-btn .txt{ display:flex; flex-direction:column; gap:2px; }
     .nav-btn .txt .t{ font-weight:800; font-size:13px; }
     .nav-btn .txt .d{ font-size:12px; color: rgba(148,163,184,.92); }
@@ -166,19 +155,16 @@
       box-shadow: 0 0 0 3px rgba(34,197,94,.12);
     }
 
-    /* MAIN */
     .main{
       width:100%;
       padding: 22px;
       padding-left: calc(22px + var(--sidebar-edge));
     }
-
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
       gap:12px; margin-bottom:16px;
       flex-wrap:wrap;
     }
-
     .page-title{ display:flex; flex-direction:column; gap:6px; }
     .page-title h1{ margin:0; font-size:20px; font-weight:900; color:var(--primary); }
     .page-title p{ margin:0; font-size:13px; color:var(--muted); }
@@ -187,7 +173,6 @@
       display:flex; align-items:center; gap:10px;
       flex-wrap:wrap; justify-content:flex-end;
     }
-
     .pill{
       display:inline-flex; align-items:center; gap:8px;
       padding:7px 10px; border-radius:999px;
@@ -226,7 +211,6 @@
     @media(min-width: 980px){
       .grid.cols-2{ grid-template-columns: 1.15fr .85fr; }
     }
-
     .card{
       background:var(--card);
       border:1px solid var(--border);
@@ -244,7 +228,6 @@
       .row.cols-3{ grid-template-columns: 1fr 1fr 1fr; }
       .row.cols-4{ grid-template-columns: 1fr 1fr 1fr 1fr; }
     }
-
     label{
       display:flex; flex-direction:column; gap:6px;
       font-size:12px; color:var(--muted); font-weight:800;
@@ -264,7 +247,6 @@
       border-color: rgba(37,99,235,.45);
       box-shadow: 0 0 0 4px rgba(37,99,235,.10);
     }
-
     .hr{ height:1px; background:var(--border); margin:12px 0; }
     .muted{ color:var(--muted); }
     .section{ display:none; }
@@ -294,7 +276,6 @@
     tr:last-child td{ border-bottom:none; }
     td small{ color:var(--muted); font-weight:800; }
 
-    /* MODAL AUTH */
     .modal{
       position: fixed; inset:0;
       z-index: 300;
@@ -321,7 +302,6 @@
       flex-wrap:wrap; margin-top:12px;
     }
 
-    /* TOAST */
     .toast{
       position: fixed;
       right: 18px;
@@ -350,7 +330,6 @@
     .toast .inner .t{ margin:0 0 4px; font-weight:900; font-size:13px; }
     .toast .inner .d{ margin:0; font-size:12px; color: rgba(226,232,240,.85); line-height:1.45; }
 
-    /* SMALL UX */
     .hint{
       display:inline-flex;
       padding:7px 10px;
@@ -407,7 +386,6 @@
 
       <div class="group-label">Akun</div>
 
-      <!-- ROBUST: onclick + handler -->
       <button class="nav-btn" id="btnOpenAuth" type="button" onclick="openAuth()">
         <span class="icon">🔒</span>
         <span class="txt"><span class="t">Login</span><span class="d">Masuk / Daftar</span></span>
@@ -435,6 +413,11 @@
       <div class="quick-actions">
         <span class="pill">Sidebar: <b id="pinState">Hover</b></span>
         <span class="pill">User: <b id="userEmail">-</b></span>
+
+        <!-- Tombol TOPBAR: login/logout selalu bisa diklik -->
+        <button class="btn" type="button" onclick="openAuth()">Login</button>
+        <button class="btn danger" type="button" onclick="doLogout()">Logout</button>
+
         <button class="btn" id="btnReloadAll" type="button">Reload Data</button>
       </div>
     </div>
@@ -487,7 +470,7 @@
               <button class="btn" id="btnLoadSetup" type="button">Load Setup</button>
             </div>
 
-            <div class="hint">Jika tombol Save/Load tidak bekerja, pastikan Anda sudah login dan SQL schema + RLS sudah dijalankan di Supabase.</div>
+            <div class="hint">Jika Save/Load tidak bekerja, pastikan sudah Login dan SQL schema + RLS sudah dijalankan di Supabase.</div>
           </div>
         </div>
 
@@ -504,7 +487,7 @@
           </div>
 
           <div class="hr"></div>
-          <p class="muted"><b>Keamanan:</b> Data per user, RLS aktif. User lain tidak bisa melihat data Anda.</p>
+          <p class="muted"><b>Keamanan:</b> Data per user (RLS). User lain tidak bisa melihat data Anda.</p>
         </div>
       </div>
     </section>
@@ -513,7 +496,7 @@
     <section id="sec-annual" class="section">
       <div class="card">
         <h2>Annual Plan (Mingguan)</h2>
-        <p>Isi volume% dan intensitas% per minggu. Planned load sederhana dipakai untuk monitoring rencana.</p>
+        <p>Isi volume% dan intensitas% per minggu. Planned load sederhana untuk monitoring rencana.</p>
 
         <div class="form">
           <div class="row cols-4">
@@ -778,7 +761,7 @@
         </div>
 
         <div class="modal-actions">
-          <button class="btn" id="btnAuthClose" type="button" onclick="closeAuth()">Tutup</button>
+          <button class="btn" type="button" onclick="closeAuth()">Tutup</button>
           <button class="btn" id="btnSignup" type="button">Daftar</button>
           <button class="btn primary" id="btnLogin" type="button">Login</button>
         </div>
@@ -801,16 +784,21 @@
     // =========================================================
     // 1) SUPABASE CONFIG (WAJIB DIGANTI)
     // =========================================================
-    const SUPABASE_URL = "https://urifesrbfoutokrmxnwu.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_rrLX0bFQkHYsrgQAiVJRnw_UhdiL...";
+    const SUPABASE_URL = "PASTE_PROJECT_URL_DI_SINI";
+    const SUPABASE_ANON_KEY = "PASTE_PUBLISHABLE_KEY_DI_SINI";
 
-    // Guard: biar tidak diam-diam gagal
     function isConfigValid(){
-      return (SUPABASE_URL.startsWith("https://") && SUPABASE_URL.includes(".supabase.co") &&
-              (SUPABASE_ANON_KEY.startsWith("sb_publishable_") || SUPABASE_ANON_KEY.startsWith("eyJ")));
+      return (
+        typeof SUPABASE_URL === "string" &&
+        SUPABASE_URL.startsWith("https://") &&
+        SUPABASE_URL.includes(".supabase.co") &&
+        typeof SUPABASE_ANON_KEY === "string" &&
+        SUPABASE_ANON_KEY.length > 20
+      );
     }
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // PENTING: jangan pakai nama variabel "supabase" agar tidak bentrok
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     // =========================================================
     // 2) TOAST
@@ -826,7 +814,7 @@
     }
 
     // =========================================================
-    // 3) NAV + PIN (KOMBINASI: gaya sederhana, fungsi lengkap)
+    // 3) NAV + PIN
     // =========================================================
     const meta = {
       setup: { h1:"Setup", desc:"Konfigurasi awal program latihan dan kalender kompetisi." },
@@ -860,6 +848,7 @@
 
     const pinBtn = document.getElementById("pinBtn");
     const pinState = document.getElementById("pinState");
+
     function applyPinned(isPinned){
       document.body.classList.toggle("sidebar-pinned", isPinned);
       localStorage.setItem("hc_sidebar_pinned", isPinned ? "1" : "0");
@@ -875,7 +864,7 @@
     if(last && sections[last]) setActivePage(last);
 
     // =========================================================
-    // 4) AUTH UI (ROBUST)
+    // 4) AUTH MODAL (ROBUST)
     // =========================================================
     const authModal = document.getElementById("authModal");
     const authStatus = document.getElementById("authStatus");
@@ -892,7 +881,6 @@
     function closeAuth(){
       authModal.classList.remove("show");
     }
-    // expose for onclick
     window.openAuth = openAuth;
     window.closeAuth = closeAuth;
 
@@ -902,7 +890,7 @@
     let CURRENT_PROGRAM = null;
 
     async function refreshSession(){
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
       CURRENT_USER = data?.session?.user || null;
 
       if(CURRENT_USER){
@@ -955,7 +943,7 @@
     }
 
     async function getOrCreateProgram(){
-      const { data: rows, error } = await supabase
+      const { data: rows, error } = await sb
         .from("hc_programs")
         .select("*")
         .order("updated_at", { ascending:false })
@@ -965,7 +953,7 @@
 
       if(rows && rows.length) return rows[0];
 
-      const { data: created, error: e2 } = await supabase
+      const { data: created, error: e2 } = await sb
         .from("hc_programs")
         .insert([{
           user_id: CURRENT_USER.id,
@@ -1008,7 +996,7 @@
       const password = document.getElementById("authPass").value;
       if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
 
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await sb.auth.signUp({ email, password });
       if(error){ toast("Daftar gagal", error.message); return; }
 
       toast("Daftar", "Berhasil. Jika Supabase minta verifikasi email, cek inbox Anda.");
@@ -1021,7 +1009,7 @@
       const password = document.getElementById("authPass").value;
       if(!email || !password){ toast("Auth", "Email dan password wajib diisi."); return; }
 
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){ toast("Login gagal", error.message); return; }
 
       closeAuth();
@@ -1029,18 +1017,17 @@
       toast("Login", "Berhasil login.");
     });
 
-    // ROBUST logout exposed to onclick
     async function doLogout(){
       try{
         if(!isConfigValid()){ toast("Konfigurasi Supabase", "URL/Key belum diganti."); return; }
 
-        const { data: sess } = await supabase.auth.getSession();
+        const { data: sess } = await sb.auth.getSession();
         if(!sess?.session){
           toast("Logout", "Anda masih Guest (belum login).");
           return;
         }
 
-        const { error } = await supabase.auth.signOut();
+        const { error } = await sb.auth.signOut();
         if(error) throw error;
 
         CURRENT_USER = null;
@@ -1057,7 +1044,7 @@
     }
     window.doLogout = doLogout;
 
-    supabase.auth.onAuthStateChange(async (_event, session)=>{
+    sb.auth.onAuthStateChange(async (_event, session)=>{
       CURRENT_USER = session?.user || null;
       await refreshSession();
       if(CURRENT_USER) await bootAfterLogin();
@@ -1124,7 +1111,7 @@
           updated_at: new Date().toISOString()
         };
 
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from("hc_programs")
           .update(payload)
           .eq("id", CURRENT_PROGRAM.id)
@@ -1207,7 +1194,7 @@
     async function loadAnnualToTable(){
       if(!CURRENT_USER || !CURRENT_PROGRAM) { renderAnnualTable([]); return; }
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("hc_annual_weeks")
         .select("*")
         .eq("program_id", CURRENT_PROGRAM.id)
@@ -1247,7 +1234,7 @@
           };
         });
 
-        const { error } = await supabase
+        const { error } = await sb
           .from("hc_annual_weeks")
           .upsert(payload, { onConflict: "program_id,week_no" });
 
@@ -1267,7 +1254,7 @@
     async function reloadMonthlyList(){
       if(!CURRENT_USER || !CURRENT_PROGRAM) { monthlyTableBody.innerHTML = ""; return; }
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("hc_monthly_plans")
         .select("*")
         .eq("program_id", CURRENT_PROGRAM.id)
@@ -1308,7 +1295,7 @@
           updated_at: new Date().toISOString()
         };
 
-        const { error } = await supabase
+        const { error } = await sb
           .from("hc_monthly_plans")
           .upsert([payload], { onConflict: "program_id,year,month" });
 
@@ -1330,7 +1317,7 @@
         const year = clampInt(document.getElementById("monthlyYear").value, 2000, 2100);
         const month = clampInt(document.getElementById("monthlyMonth").value, 1, 12);
 
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from("hc_monthly_plans")
           .select("*")
           .eq("program_id", CURRENT_PROGRAM.id)
@@ -1362,7 +1349,7 @@
     async function reloadMonitoringList(){
       if(!CURRENT_USER || !CURRENT_PROGRAM) { monTableBody.innerHTML = ""; return; }
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("hc_monitoring_logs")
         .select("*")
         .eq("program_id", CURRENT_PROGRAM.id)
@@ -1412,7 +1399,7 @@
           updated_at: new Date().toISOString()
         };
 
-        const { error } = await supabase
+        const { error } = await sb
           .from("hc_monitoring_logs")
           .upsert([payload], { onConflict: "program_id,log_date" });
 
@@ -1434,7 +1421,7 @@
         const log_date = document.getElementById("monDate").value;
         if(!log_date){ toast("Monitoring", "Tanggal wajib diisi."); return; }
 
-        const { data, error } = await supabase
+        const { data, error } = await sb
           .from("hc_monitoring_logs")
           .select("*")
           .eq("program_id", CURRENT_PROGRAM.id)
@@ -1463,7 +1450,7 @@
         const log_date = document.getElementById("monDate").value;
         if(!log_date){ toast("Monitoring", "Tanggal wajib diisi."); return; }
 
-        const { error } = await supabase
+        const { error } = await sb
           .from("hc_monitoring_logs")
           .delete()
           .eq("program_id", CURRENT_PROGRAM.id)
@@ -1517,17 +1504,22 @@
               ticks: { stepSize: 1 }
             }
           },
-          plugins: {
-            legend: { display: true }
-          }
+          plugins: { legend: { display: true } }
         }
       });
     }
 
     async function reloadTestsAndRadar(){
-      if(!CURRENT_USER || !CURRENT_PROGRAM) { testTableBody.innerHTML = ""; renderRadar(["-"], [0]); return; }
+      if(!CURRENT_USER || !CURRENT_PROGRAM) {
+        testTableBody.innerHTML = "";
+        renderRadar(
+          ["Daya Tahan","Kecepatan","Kekuatan","Power","Fleksibilitas","Kelincahan"],
+          [0,0,0,0,0,0]
+        );
+        return;
+      }
 
-      const { data, error } = await supabase
+      const { data, error } = await sb
         .from("hc_tests")
         .select("*")
         .eq("program_id", CURRENT_PROGRAM.id)
@@ -1536,7 +1528,6 @@
 
       if(error){ toast("Load tes gagal", error.message); return; }
 
-      // table
       testTableBody.innerHTML = "";
       (data || []).forEach(r=>{
         const tr = document.createElement("tr");
@@ -1589,7 +1580,7 @@
           result_value, score, notes
         };
 
-        const { error } = await supabase.from("hc_tests").insert([payload]);
+        const { error } = await sb.from("hc_tests").insert([payload]);
         if(error) throw error;
 
         toast("Tes", "Data tes disimpan.");
@@ -1615,7 +1606,7 @@
 
         if(!ids.length){ toast("Tes", "Tidak ada yang dipilih."); return; }
 
-        const { error } = await supabase
+        const { error } = await sb
           .from("hc_tests")
           .delete()
           .in("id", ids);
@@ -1650,10 +1641,10 @@
       }
 
       await refreshSession();
+
       if(CURRENT_USER){
         await bootAfterLogin();
       } else {
-        // preload table ui
         renderAnnualTable([]);
         renderRadar(
           ["Daya Tahan","Kecepatan","Kekuatan","Power","Fleksibilitas","Kelincahan"],
@@ -1663,7 +1654,135 @@
     })();
   </script>
 
-  <!--
-  -->
+  <!-- =========================================================
+       SQL SCHEMA + RLS (JALANKAN DI SUPABASE SQL EDITOR)
+       =========================================================
+
+  create table if not exists public.hc_programs (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null,
+    program_name text not null default '',
+    sport text not null default 'cycling',
+    start_date date,
+    main_event_date date,
+    periodization text not null default 'linear',
+    notes text not null default '',
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now()
+  );
+
+  create table if not exists public.hc_annual_weeks (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null,
+    program_id uuid not null references public.hc_programs(id) on delete cascade,
+    week_no int not null,
+    phase text not null default 'Base',
+    focus text not null default '',
+    volume_pct int not null default 60,
+    intensity_pct int not null default 60,
+    notes text not null default '',
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    unique(program_id, week_no)
+  );
+
+  create table if not exists public.hc_monthly_plans (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null,
+    program_id uuid not null references public.hc_programs(id) on delete cascade,
+    year int not null,
+    month int not null,
+    goal text not null default '',
+    focus text not null default '',
+    notes text not null default '',
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    unique(program_id, year, month)
+  );
+
+  create table if not exists public.hc_monitoring_logs (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null,
+    program_id uuid not null references public.hc_programs(id) on delete cascade,
+    log_date date not null,
+    session_load int not null default 0,
+    readiness int not null default 3,
+    note text not null default '',
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    unique(program_id, log_date)
+  );
+
+  create table if not exists public.hc_tests (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null,
+    program_id uuid not null references public.hc_programs(id) on delete cascade,
+    test_date date not null,
+    category text not null,
+    test_name text not null,
+    result_value text not null default '',
+    score int not null default 3,
+    notes text not null default '',
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now()
+  );
+
+  alter table public.hc_programs enable row level security;
+  alter table public.hc_annual_weeks enable row level security;
+  alter table public.hc_monthly_plans enable row level security;
+  alter table public.hc_monitoring_logs enable row level security;
+  alter table public.hc_tests enable row level security;
+
+  drop policy if exists "hc_programs_select" on public.hc_programs;
+  drop policy if exists "hc_programs_insert" on public.hc_programs;
+  drop policy if exists "hc_programs_update" on public.hc_programs;
+  drop policy if exists "hc_programs_delete" on public.hc_programs;
+
+  drop policy if exists "hc_annual_weeks_select" on public.hc_annual_weeks;
+  drop policy if exists "hc_annual_weeks_insert" on public.hc_annual_weeks;
+  drop policy if exists "hc_annual_weeks_update" on public.hc_annual_weeks;
+  drop policy if exists "hc_annual_weeks_delete" on public.hc_annual_weeks;
+
+  drop policy if exists "hc_monthly_plans_select" on public.hc_monthly_plans;
+  drop policy if exists "hc_monthly_plans_insert" on public.hc_monthly_plans;
+  drop policy if exists "hc_monthly_plans_update" on public.hc_monthly_plans;
+  drop policy if exists "hc_monthly_plans_delete" on public.hc_monthly_plans;
+
+  drop policy if exists "hc_monitoring_logs_select" on public.hc_monitoring_logs;
+  drop policy if exists "hc_monitoring_logs_insert" on public.hc_monitoring_logs;
+  drop policy if exists "hc_monitoring_logs_update" on public.hc_monitoring_logs;
+  drop policy if exists "hc_monitoring_logs_delete" on public.hc_monitoring_logs;
+
+  drop policy if exists "hc_tests_select" on public.hc_tests;
+  drop policy if exists "hc_tests_insert" on public.hc_tests;
+  drop policy if exists "hc_tests_update" on public.hc_tests;
+  drop policy if exists "hc_tests_delete" on public.hc_tests;
+
+  create policy "hc_programs_select" on public.hc_programs for select using (auth.uid() = user_id);
+  create policy "hc_programs_insert" on public.hc_programs for insert with check (auth.uid() = user_id);
+  create policy "hc_programs_update" on public.hc_programs for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  create policy "hc_programs_delete" on public.hc_programs for delete using (auth.uid() = user_id);
+
+  create policy "hc_annual_weeks_select" on public.hc_annual_weeks for select using (auth.uid() = user_id);
+  create policy "hc_annual_weeks_insert" on public.hc_annual_weeks for insert with check (auth.uid() = user_id);
+  create policy "hc_annual_weeks_update" on public.hc_annual_weeks for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  create policy "hc_annual_weeks_delete" on public.hc_annual_weeks for delete using (auth.uid() = user_id);
+
+  create policy "hc_monthly_plans_select" on public.hc_monthly_plans for select using (auth.uid() = user_id);
+  create policy "hc_monthly_plans_insert" on public.hc_monthly_plans for insert with check (auth.uid() = user_id);
+  create policy "hc_monthly_plans_update" on public.hc_monthly_plans for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  create policy "hc_monthly_plans_delete" on public.hc_monthly_plans for delete using (auth.uid() = user_id);
+
+  create policy "hc_monitoring_logs_select" on public.hc_monitoring_logs for select using (auth.uid() = user_id);
+  create policy "hc_monitoring_logs_insert" on public.hc_monitoring_logs for insert with check (auth.uid() = user_id);
+  create policy "hc_monitoring_logs_update" on public.hc_monitoring_logs for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  create policy "hc_monitoring_logs_delete" on public.hc_monitoring_logs for delete using (auth.uid() = user_id);
+
+  create policy "hc_tests_select" on public.hc_tests for select using (auth.uid() = user_id);
+  create policy "hc_tests_insert" on public.hc_tests for insert with check (auth.uid() = user_id);
+  create policy "hc_tests_update" on public.hc_tests for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  create policy "hc_tests_delete" on public.hc_tests for delete using (auth.uid() = user_id);
+
+  ========================================================= -->
 </body>
 </html>
