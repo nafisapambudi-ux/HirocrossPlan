@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HiroCross_Plan</title>
+
+  <!-- FAVICON -->
+  <link rel="icon" href="./Hirocross-logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="./Hirocross-logo.png">
+  <meta name="theme-color" content="#0f172a">
+
+  <!-- Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.1.0"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://cswapndilbogsxllxtks.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_1oCGldF2ca7orsshuHBQjw_TtW8AoUP";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
+
+  <style>
+    .login-logo{
+      display:block;
+      margin: 0 auto 14px;
+      width: 80px;
+      height: auto;
+    }
+    :root {
+      --primary: #0f172a;
+      --accent: #0827ef;
+      --bg: #f7f4f4;
+      --border: #0c0000;
+      --success: #10b981;
+      --red: #ef4444;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #1e293b; }
+
+    header {
+      background: var(--primary); color: rgb(248, 6, 6); padding: 15px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 1000;
+    }
+    nav { display: flex; gap: 8px; }
+    nav button {
+      background: transparent; border: none; color: #94a3b8;
+      padding: 10px 12px; cursor: pointer; font-weight: 700;
+      border-radius: 8px; font-size: 0.75rem;
+    }
+    nav button.active { color: white; background: rgba(255,255,255,0.1); }
+
+    .side-dock {
+      position: fixed; right: 20px; bottom: 20px;
+      display: flex; flex-direction: column; gap: 10px; z-index: 2000;
+    }
+    .dock-btn {
+      width: 50px; height: 50px; border-radius: 12px; border: none;
+      background: var(--primary); color: white; cursor: pointer; font-size: 1.2rem;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2); transition: 0.3s;
+    }
+    .dock-btn:hover { background: var(--accent); transform: scale(1.1); }
+
+    .content-section { display: none; padding: 30px; max-width: 1550px; margin: 0 auto; }
+    .content-section.active { display: block; }
+
+    .card {
+      background: white; padding: 25px; border-radius: 20px; border: 1px solid var(--border);
+      margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+    label { display: block; font-size: 0.65rem; font-weight: 800; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+    input, select, textarea {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: #f8fafc; font-family: inherit; font-size: 0.8rem;
+    }
+
+    .chart-layout { display: flex; align-items: stretch; gap: 15px; height: 400px; }
+    .chart-legend-side {
+      display: flex; flex-direction: column; justify-content: center; gap: 30px;
+      padding: 10px; border-right: 2px solid var(--border);
+    }
+    .legend-item-side {
+      writing-mode: vertical-rl; transform: rotate(180deg);
+      font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .chart-main-area { flex-grow: 1; position: relative; }
+
+    .table-scroll { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; min-width: 1000px; }
+    th {
+      padding: 15px 5px; background: #f8fafc; color: #64748b; font-size: 0.65rem;
+      text-transform: uppercase; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 5px; border-bottom: 1px solid #f1f5f9; text-align: center; font-size: 0.75rem; }
+    .input-table {
+      width: 100%; text-align: center; border: 1px solid #cbd5e1; padding: 6px;
+      font-weight: 800; color: var(--accent); border-radius: 4px;
+    }
+
+    .week-row { display: grid; grid-template-columns: 180px repeat(7, 1fr); gap: 10px; margin-bottom: 20px; }
+    .day-box {
+      background: white; border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px; min-height: 120px; cursor: pointer; transition: 0.2s; position: relative;
+    }
+    .day-box:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+    .day-date-label { position: absolute; top: 5px; right: 8px; font-size: 0.6rem; font-weight: 800; color: #94a3b8; }
+    .done-badge {
+      position: absolute; bottom: 5px; right: 5px; font-size: 10px;
+      background: var(--success); color: white; padding: 2px 5px; border-radius: 4px; display: none;
+    }
+
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-card { padding: 20px; border-radius: 15px; text-align: center; color: white; }
+    .stat-val { font-size: 2rem; font-weight: 800; display: block; }
+    .stat-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+
+    .modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: white; padding: 25px; border-radius: 20px;
+      width: 92%; max-width: 900px; max-height: 85vh; overflow-y: auto;
+    }
+    .index-box {
+      background: #f8fafc; border: 1px solid var(--border);
+      padding: 10px; border-radius: 8px; font-size: 0.7rem; margin-top: 10px;
+      font-weight: 800; text-align: center;
+    }
+
+    .component-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .comp-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .comp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .comp-title { font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+    .comp-perc { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+    .progress-track { width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 1s ease-in-out; }
+    .comp-detail { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
+
+    .realization-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+    .real-card {
+      background: white; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;
+      display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
+    .real-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .real-icon { width: 40px; height: 40px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .real-label { display: block; font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+    .real-value { display: block; font-size: 1.1rem; font-weight: 800; color: #1e293b; }
+    .real-value small { font-size: 0.7rem; font-weight: 600; color: #94a3b8; }
+
+    /* Modal fix */
+    #sessionModal table { width: 100% !important; border-collapse: collapse; table-layout: fixed; min-width: 0 !important; }
+    #sessionModal td { padding: 6px 6px; vertical-align: middle; }
+    #sessionModal #exerciseBody td:nth-child(1) { width: 42%; text-align: left; }
+    #sessionModal #exerciseBody td:nth-child(2) { width: 18%; }
+    #sessionModal #exerciseBody td:nth-child(3) { width: 12%; }
+    #sessionModal #exerciseBody td:nth-child(4) { width: 12%; }
+    #sessionModal #exerciseBody td:nth-child(5) { width: 14%; }
+    #sessionModal #exerciseBody td:nth-child(6) { width: 2%;  }
+    #sessionModal #exerciseBody input, #sessionModal #exerciseBody select {
+      width: 100% !important; min-width: 0; box-sizing: border-box; padding: 10px 10px; font-size: 0.8rem;
+    }
+
+    /* Print */
+    @page { size: A4; margin: 12mm; }
+    @media print {
+      header, nav, .side-dock, .no-print, .modal { display: none !important; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      html, body { background: #fff !important; height: auto !important; }
+      .card, .week-row, .real-card, .comp-card { break-inside: avoid !important; page-break-inside: avoid !important; }
+      table { min-width: 0 !important; }
+      th, td { font-size: 10px !important; }
+      canvas { max-width: 100% !important; height: auto !important; }
+      .card, .real-card, .comp-card, .day-box { box-shadow: none !important; }
+      .week-row { grid-template-columns: 1fr !important; }
+    }
+
+    /* Brand */
+    .brand{ display:flex; align-items:center; gap:12px; }
+    .brand-logo{ width:42px; height:42px; object-fit:contain; }
+    .brand-title{ color:#ffffff; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin:0; }
+
+    /* Login UI (Overlay Gate) */
+    #authOverlay{
+      position:fixed; inset:0;
+      background:linear-gradient(135deg,#020617,#020617ee);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999;
+      padding:20px;
+    }
+    .auth-card{
+      background:#fff;
+      width:100%;
+      max-width:380px;
+      padding:26px;
+      border-radius:16px;
+      box-shadow:0 20px 50px rgba(0,0,0,.35);
+      text-align:center;
+    }
+    .auth-card h2{ margin-bottom:6px; font-weight:800; }
+    .auth-card p{ font-size:.85rem; color:#64748b; margin-bottom:18px; }
+    .auth-card input{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:1px solid #cbd5e1;
+      margin-bottom:12px;
+      background:#fff;
+    }
+    .auth-actions{ display:flex; flex-direction:column; gap:10px; }
+    .btn-primary{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:var(--accent);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .btn-success{
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      background:var(--success);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .auth-msg{ margin-top:12px; font-size:.8rem; font-weight:700; color:#ef4444; min-height:18px; }
+
+    .auth-links{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:.78rem;
+      font-weight:800;
+    }
+    .auth-links a{
+      color: var(--accent);
+      text-decoration:none;
+      cursor:pointer;
+    }
+    .auth-links a:hover{ text-decoration:underline; }
+
+    /* Reset modal (di dalam overlay) */
+    #resetBox{
+      display:none;
+      margin-top:14px;
+      padding:14px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#f8fafc;
+      text-align:left;
+    }
+    #resetBox h3{ font-size:.95rem; margin-bottom:10px; }
+    #resetBox input{ margin-bottom:10px; }
+
+    .topbar-user{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#cbd5e1;
+      font-size:.8rem;
+      font-weight:700;
+    }
+    .topbar-user button{
+      border:none;
+      background:#ef4444;
+      color:#fff;
+      padding:9px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:.75rem;
+    }
+
+    /* App disabled state (biar tidak bisa interaksi sebelum login) */
+    #appSection.app-disabled{
+      pointer-events: none;
+      user-select: none;
+      filter: blur(1px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUTH OVERLAY -->
+  <div id="authOverlay">
+    <div class="auth-card">
+      <img src="./Hirocross-logo.png" alt="HiroCross Logo" class="login-logo">
+      <h2>HIROCROSS PLAN</h2>
+      <p>Daftar atau login untuk akses Setup & Annual Plan</p>
+
+      <input id="loginEmail" type="email" placeholder="Email" autocomplete="username" />
+      <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" />
+
+      <div class="auth-actions">
+        <button id="btnLogin" class="btn-primary" type="button">LOGIN</button>
+        <button id="btnSignUp" class="btn-success" type="button">DAFTAR</button>
+      </div>
+
+      <div class="auth-links">
+        <a id="linkForgot" role="button">Lupa password?</a>
+        <a id="linkFill" role="button">Isi email</a>
+      </div>
+
+      <div id="resetBox">
+        <h3>Reset Password</h3>
+        <input id="newPass1" type="password" placeholder="Password baru (min 6)" autocomplete="new-password" />
+        <input id="newPass2" type="password" placeholder="Ulangi password baru" autocomplete="new-password" />
+        <button id="btnSaveNewPass" class="btn-primary" type="button">SIMPAN PASSWORD BARU</button>
+      </div>
+
+      <div id="authMsg" class="auth-msg"></div>
+    </div>
+  </div>
+
+  <!-- APP SECTION -->
+  <section id="appSection" class="app-disabled">
+
+    <header>
+      <div class="brand">
+        <img src="./Hirocross-logo.png" alt="HIROCROSS Logo" class="brand-logo">
+        <h1 class="brand-title">HIRO CROSS</h1>
+      </div>
+
+      <nav>
+        <button id="btn1" class="active" type="button">SETUP</button>
+        <button id="btn2" type="button">ANNUAL PLAN</button>
+        <button id="btn3" type="button">BULANAN</button>
+        <button id="btn4" type="button">MONITORING</button>
+        <button id="btn5" type="button">TES &amp; PENGUKURAN</button>
+      </nav>
+
+      <div class="topbar-user no-print">
+        <span id="userEmailLabel">-</span>
+        <button id="btnLogout" type="button">LOGOUT</button>
+      </div>
+    </header>
+
+    <div class="side-dock no-print">
+      <button id="btnSaveDb" class="dock-btn" type="button" title="Simpan ke Database">💾</button>
+      <button id="btnLoadDb" class="dock-btn" type="button" title="Buka dari Database">📂</button>
+      <button id="btnPrint" class="dock-btn" type="button" title="Print / PDF">🖨️</button>
+      <input type="file" id="fInput" style="display:none" />
+    </div>
+
+    <section id="step1" class="content-section active">
+      <div class="card">
+        <h2 style="margin-bottom:20px">Parameter Master Program</h2>
+        <div class="grid">
+          <div style="grid-column: span 2;"><label>Nama Program</label><input type="text" id="planName" value="Annual Plan 2025"></div>
+          <div><label>Mulai Tanggal</label><input type="date" id="start"></div>
+          <div><label>Target Tanding</label><input type="date" id="match"></div>
+          <div><label>Kekuatan (kg)</label><input type="number" id="tK" value="100"></div>
+          <div><label>Kecepatan (m)</label><input type="number" id="tV" value="1000"></div>
+          <div><label>Daya Tahan (km)</label><input type="number" id="tD" value="10"></div>
+          <div><label>Teknik (rep)</label><input type="number" id="tTek" value="500"></div>
+          <div><label>Taktik (rep)</label><input type="number" id="tTak" value="200"></div>
+        </div>
+        <button id="btnGeneratePlan"
+          type="button"
+          style="width:100%; margin-top:20px; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:800">
+          GENERATE PROGRAM
+        </button>
+      </div>
+    </section>
+
+    <section id="step2" class="content-section">
+      <h2 id="displayTitle" style="text-align:center; text-transform:uppercase; margin-bottom:20px"></h2>
+
+      <div class="card">
+        <label>Editor Struktur Mesocycle</label>
+        <div id="mesoEditorGrid" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+        <div id="lockInfo" style="margin-top:15px; font-size:0.75rem; font-weight:800; border-top:1px solid #eee; padding-top:10px"></div>
+      </div>
+
+      <div class="card">
+        <div class="chart-layout">
+          <div class="chart-legend-side">
+            <div class="legend-item-side" style="color: var(--accent);">VOLUME LOAD</div>
+            <div class="legend-item-side" style="color: var(--red);">INTENSITAS</div>
+          </div>
+          <div class="chart-main-area">
+            <canvas id="mainChart"></canvas>
+            <div id="mesoStrip" style="display:flex; height:25px; margin-top:5px; border-radius:4px; overflow:hidden;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:50px">Wk</th>
+                <th style="width:120px">Meso</th>
+                <th style="width:100px">Phase</th>
+                <th style="width:80px">Vol%</th>
+                <th style="width:80px">Int%</th>
+                <th>Kekuatan</th><th>Kecepatan</th><th>D.Tahan</th><th>Teknik</th><th>Taktik</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="step3" class="content-section">
+      <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center">
+        <h2>Kalender Kerja Bulanan</h2>
+        <select id="monthViewSelector" style="width:200px"></select>
+      </div>
+      <div id="monthGrid"></div>
+    </section>
+
+    <section id="step4" class="content-section">
+      <h2 style="margin-bottom:20px">Dashboard Analisis & Efektivitas</h2>
+
+      <div class="stat-grid">
+        <div class="stat-card" style="background: var(--primary);"><span class="stat-label">Total Minggu</span><span id="statWk" class="stat-val">0</span></div>
+        <div class="stat-card" style="background: var(--accent);"><span class="stat-label">Program Plan</span><span id="statPlan" class="stat-val">0</span></div>
+        <div class="stat-card" style="background: var(--success);"><span class="stat-label">Sesi Realisasi</span><span id="statReal" class="stat-val">0</span></div>
+        <div class="stat-card" style="background: var(--red);"><span class="stat-label">Index Kepatuhan</span><span id="statIndex" class="stat-val">0%</span></div>
+      </div>
+
+      <div class="card" style="background: #f8fafc; border: 1px solid var(--accent);">
+        <h3 style="color:var(--accent); margin-bottom:15px; display:flex; align-items:center; gap:10px">
+          📈 TOTAL AKUMULASI LATIHAN (Year to Date)
+        </h3>
+        <div class="realization-grid">
+          <div class="real-card">
+            <div class="real-icon">🏋️</div>
+            <div>
+              <span class="real-label">Total Angkatan</span>
+              <span class="real-value" id="total-str">0 <small>kg</small></span>
+            </div>
+          </div>
+          <div class="real-card">
+            <div class="real-icon">⚡</div>
+            <div>
+              <span class="real-label">Jarak Sprint</span>
+              <span class="real-value" id="total-spd">0 <small>m</small></span>
+            </div>
+          </div>
+          <div class="real-card">
+            <div class="real-icon">🏃</div>
+            <div>
+              <span class="real-label">Jarak Lari</span>
+              <span class="real-value" id="total-end">0 <small>km</small></span>
+            </div>
+          </div>
+          <div class="real-card">
+            <div class="real-icon">⚽</div>
+            <div>
+              <span class="real-label">Volume Teknik</span>
+              <span class="real-value" id="total-tek">0 <small>reps</small></span>
+            </div>
+          </div>
+          <div class="real-card">
+            <div class="real-icon">🧠</div>
+            <div>
+              <span class="real-label">Volume Taktik</span>
+              <span class="real-value" id="total-tak">0 <small>reps</small></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: 15px;">Persentase Target Tercapai (Plan vs Real)</h3>
+        <div class="component-grid" id="componentStatsContainer"></div>
+      </div>
+
+      <div class="card">
+        <h3>Tren Volume: Plan vs Realisasi</h3>
+        <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 15px;">Membandingkan rata-rata volume rencana dengan volume yang benar-benar terlaksana.</p>
+        <div style="height:350px"><canvas id="monitorComparisonChart"></canvas></div>
+        <div id="indexExplanation" class="index-box">Index 100% berarti semua sesi latihan dilaksanakan sesuai rencana.</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:25px">
+        <div class="card"><h3>Distribusi Intensitas (Plan)</h3><div style="height:300px"><canvas id="monitorPieChart"></canvas></div></div>
+        <div class="card"><h3>Tingkat Kehadiran Per Bulan</h3><div style="height:300px"><canvas id="monitorBarChart"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- ===== TES & PENGUKURAN (STEP 5) ===== -->
+    <section id="step5" class="content-section">
+      <h2 style="margin-bottom:20px">Tes & Pengukuran Fisik</h2>
+
+      <div class="card">
+        <h3 style="margin-bottom:12px">Input Tes</h3>
+
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+          <div>
+            <label>Nama Atlet</label>
+            <input id="testAthlete" type="text" placeholder="Contoh: Atlet A">
+          </div>
+
+          <div>
+            <label>Tanggal Tes</label>
+            <input id="testDate" type="date">
+          </div>
+
+          <div>
+            <label>Usia (tahun)</label>
+            <input id="testAge" type="number" min="5" max="80" placeholder="Contoh: 20">
+          </div>
+
+          <div>
+            <label>Jenis Kelamin</label>
+            <select id="testSex">
+              <option value="M">Laki-laki</option>
+              <option value="F">Perempuan</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Berat Badan (kg)</label>
+            <input id="testBW" type="number" step="0.1" placeholder="Contoh: 70.5">
+          </div>
+
+          <div>
+            <label>Kategori Tes</label>
+            <select id="testCategory"></select>
+          </div>
+
+          <div>
+            <label>Item Tes</label>
+            <select id="testItem"></select>
+          </div>
+
+          <div id="testVariantWrap" style="display:none;">
+            <label>Variasi (1RM)</label>
+            <select id="testVariant">
+              <option value="Back Squat">Back Squat</option>
+              <option value="Bench Press">Bench Press</option>
+              <option value="Deadlift">Deadlift</option>
+              <option value="Front Squat">Front Squat</option>
+              <option value="Overhead Press">Overhead Press</option>
+            </select>
+          </div>
+
+          <div id="testMethodWrap" style="display:none;">
+            <label>Metode 1RM</label>
+            <select id="testMethod">
+              <option value="actual">Actual 1RM</option>
+              <option value="estimated">Estimated (Epley)</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Nilai Utama</label>
+            <input id="testValue" type="number" step="0.1" placeholder="Contoh: 120">
+          </div>
+
+          <div>
+            <label>Satuan</label>
+            <select id="testUnit">
+              <option value="kg">kg</option>
+              <option value="cm">cm</option>
+              <option value="m">m</option>
+              <option value="s">detik</option>
+              <option value="reps">reps</option>
+              <option value="ml/kg/min">ml/kg/min</option>
+              <option value="%">%</option>
+              <option value="W">W</option>
+            </select>
+          </div>
+
+          <div id="testRepsWrap" style="display:none;">
+            <label>Repetisi (untuk estimasi)</label>
+            <input id="testReps" type="number" min="1" max="15" placeholder="Contoh: 5">
+          </div>
+
+          <div>
+            <label>Skor (1–5)</label>
+            <select id="testScore">
+              <option value="1">1 - Sangat Kurang</option>
+              <option value="2">2 - Kurang</option>
+              <option value="3" selected>3 - Cukup</option>
+              <option value="4">4 - Baik</option>
+              <option value="5">5 - Sangat Baik</option>
+            </select>
+          </div>
+
+          <div style="grid-column: span 2;">
+            <label>Catatan</label>
+            <input id="testNotes" type="text" placeholder="Opsional: kondisi tes, alat, protokol, dll.">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+          <button id="btnAddTest" type="button" class="btn-primary" style="flex:2;">SIMPAN HASIL TES</button>
+          <button id="btnClearTests" type="button" style="flex:1; background:#64748b; color:#fff; border:none; border-radius:10px; font-weight:800; cursor:pointer;">
+            RESET FORM
+          </button>
+        </div>
+
+        <div id="testComputedBox" class="index-box" style="margin-top:12px; text-align:left; display:none;"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px;">
+          <div>
+            <h3 style="margin-bottom:6px;">Radar Profil (Skala 1–5)</h3>
+            <p style="font-size: 0.7rem; color: #64748b;">
+              Skor otomatis dari norma usia+jenis kelamin. Radar menampilkan skor terbaru per domain.
+            </p>
+          </div>
+          <div style="min-width:240px;">
+            <label>Pilih Atlet</label>
+            <select id="radarAthleteFilter"></select>
+          </div>
+        </div>
+
+        <div style="height:360px"><canvas id="testRadarChart"></canvas></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:12px;">Riwayat Tes</h3>
+        <div class="table-scroll">
+          <table style="min-width:1100px;">
+            <thead>
+              <tr>
+                <th style="width:120px;">Tanggal</th>
+                <th style="width:160px;">Atlet</th>
+                <th style="width:120px;">Kategori</th>
+                <th style="width:180px;">Item</th>
+                <th style="width:140px;">Varian</th>
+                <th style="width:140px;">Nilai</th>
+                <th style="width:120px;">Skor</th>
+                <th>Catatan</th>
+                <th style="width:60px;">Hapus</th>
+              </tr>
+            </thead>
+            <tbody id="testsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div id="sessionModal" class="modal">
+      <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:2px solid #f1f5f9; padding-bottom:10px">
+          <h3 id="modalDayName">Detail Latihan</h3>
+          <div style="display:flex; align-items:center; gap:15px;">
+            <label style="margin:0; color:var(--success);">
+              <input type="checkbox" id="isDone" style="width:auto; margin-right:5px"> SELESAI
+            </label>
+            <select id="dayIntSelect" style="width:140px; font-weight:800">
+              <option value="Rest">REST</option>
+              <option value="Low">LOW</option>
+              <option value="Med">MEDIUM</option>
+              <option value="High">HIGH</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <div><label>🔥 Warm Up</label><textarea id="warmupInput" rows="2" placeholder="Contoh: Jogging 10 menit..."></textarea></div>
+
+          <div>
+            <label>🎯 Main Set</label>
+            <table><tbody id="exerciseBody"></tbody></table>
+            <button id="btnAddExercise"
+              type="button"
+              style="background:var(--accent); color:white; border:none; padding:8px 15px; border-radius:6px; font-size:0.7rem; margin-top:10px; cursor:pointer">
+              + Tambah Item
+            </button>
+          </div>
+
+          <div><label>❄️ Cooling Down</label><textarea id="cooldownInput" rows="2" placeholder="Contoh: Static stretching..."></textarea></div>
+
+          <div style="background:#ecfdf5; padding:10px; border-radius:10px;">
+            <label>🌿 Recovery & Notes</label>
+            <textarea id="recoveryInput" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:20px">
+          <button id="btnSaveSession"
+            type="button"
+            style="flex:2; background:var(--primary); color:white; padding:12px; border:none; border-radius:10px; font-weight:800; cursor:pointer">
+            SIMPAN
+          </button>
+          <button id="btnCloseModal"
+            type="button"
+            style="flex:1; background:#64748b; color:white; padding:12px; border:none; border-radius:10px; font-weight:800; cursor:pointer">
+            BATAL
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <script>
+    // =========================
+    // AUTH
+    // =========================
+    function setAuthMsg(text, isOk=false){
+      const el = document.getElementById("authMsg");
+      el.style.color = isOk ? "#10b981" : "#ef4444";
+      el.textContent = text || "";
+    }
+
+    function fillDemoEmail(){
+      const email = document.getElementById("loginEmail");
+      if(!email.value) email.value = "emailanda@contoh.com";
+      setAuthMsg("Silakan ganti dengan email Anda.", true);
+    }
+
+    function getSiteUrlForRedirect(){
+      return window.location.origin + window.location.pathname;
+    }
+
+    function setAppEnabled(isEnabled){
+      const overlay = document.getElementById("authOverlay");
+      const app = document.getElementById("appSection");
+      if(isEnabled){
+        overlay.style.display = "none";
+        app.classList.remove("app-disabled");
+      } else {
+        overlay.style.display = "flex";
+        app.classList.add("app-disabled");
+      }
+    }
+
+    async function doLogin(){
+      try{
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        if(!email || !password){ setAuthMsg("Email dan password wajib diisi."); return; }
+        setAuthMsg("Memproses...", true);
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if(error){ setAuthMsg("Login gagal: " + error.message); return; }
+
+        const userEmail = data?.user?.email || email;
+        document.getElementById("userEmailLabel").textContent = userEmail;
+
+        document.getElementById("resetBox").style.display = "none";
+        setAuthMsg("");
+        setAppEnabled(true);
+      } catch(err){
+        console.error(err);
+        setAuthMsg("Login gagal: " + (err?.message || "unknown"));
+      }
+    }
+
+    async function doSignUp(){
+      try{
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        if(!email || !password){ setAuthMsg("Email dan password wajib diisi."); return; }
+        if(password.length < 6){ setAuthMsg("Password minimal 6 karakter."); return; }
+        setAuthMsg("Membuat akun...", true);
+
+        const { error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: getSiteUrlForRedirect() }
+        });
+
+        if(error){
+          setAuthMsg("Daftar gagal: " + error.message);
+          return;
+        }
+
+        setAuthMsg("Akun dibuat. Jika diminta verifikasi email, cek inbox lalu login.", true);
+      } catch(err){
+        console.error(err);
+        setAuthMsg("Daftar gagal: " + (err?.message || "unknown"));
+      }
+    }
+
+    async function doLogout(){
+      try{
+        await supabaseClient.auth.signOut();
+      } finally {
+        document.getElementById("userEmailLabel").textContent = "-";
+        document.getElementById("resetBox").style.display = "none";
+        setAuthMsg("");
+        setAppEnabled(false);
+      }
+    }
+
+    async function sendResetEmail(){
+      try{
+        const email = document.getElementById("loginEmail").value.trim();
+        if(!email){
+          setAuthMsg("Isi email dulu, lalu klik Lupa password.");
+          return;
+        }
+        setAuthMsg("Mengirim link reset ke email...", true);
+
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: getSiteUrlForRedirect()
+        });
+
+        if(error){
+          setAuthMsg("Gagal kirim email reset: " + error.message);
+          return;
+        }
+
+        setAuthMsg("Link reset terkirim. Cek inbox/spam email Anda.", true);
+      } catch(err){
+        console.error(err);
+        setAuthMsg("Gagal kirim email reset: " + (err?.message || "unknown"));
+      }
+    }
+
+    function parseHashParams(){
+      const h = window.location.hash || "";
+      const raw = h.startsWith("#") ? h.slice(1) : h;
+      const params = new URLSearchParams(raw);
+      const out = {};
+      for(const [k,v] of params.entries()) out[k] = v;
+      return out;
+    }
+
+    async function handleRecoveryFromUrl(){
+      const p = parseHashParams();
+      if(p.type !== "recovery") return;
+
+      setAppEnabled(false);
+      document.getElementById("resetBox").style.display = "block";
+      setAuthMsg("Masukkan password baru Anda.", true);
+
+      try{
+        const access_token = p.access_token || null;
+        const refresh_token = p.refresh_token || null;
+
+        if(access_token){
+          await supabaseClient.auth.setSession({ access_token, refresh_token });
+        }
+      } catch(e){
+        console.warn("setSession from recovery token failed:", e);
+      }
+    }
+
+    async function submitNewPassword(){
+      try{
+        const a = (document.getElementById("newPass1").value || "").trim();
+        const b = (document.getElementById("newPass2").value || "").trim();
+        if(a.length < 6){ setAuthMsg("Password baru minimal 6 karakter."); return; }
+        if(a !== b){ setAuthMsg("Password baru tidak sama. Ulangi lagi."); return; }
+
+        setAuthMsg("Menyimpan password baru...", true);
+
+        const { error } = await supabaseClient.auth.updateUser({ password: a });
+        if(error){
+          setAuthMsg("Gagal update password: " + error.message);
+          return;
+        }
+
+        setAuthMsg("Password berhasil diubah. Silakan login.", true);
+
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        document.getElementById("resetBox").style.display = "none";
+
+        try{ await supabaseClient.auth.signOut(); } catch(e){}
+      } catch(err){
+        console.error(err);
+        setAuthMsg("Gagal update password: " + (err?.message || "unknown"));
+      }
+    }
+
+    async function bootAuth(){
+      await handleRecoveryFromUrl();
+
+      const { data } = await supabaseClient.auth.getSession();
+      const sess = data?.session;
+
+      if(sess){
+        document.getElementById("userEmailLabel").textContent = sess.user.email || "-";
+        setAppEnabled(true);
+      } else {
+        document.getElementById("userEmailLabel").textContent = "-";
+        setAppEnabled(false);
+      }
+    }
+
+    // Auth state watcher
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+      if(session){
+        document.getElementById("userEmailLabel").textContent = session.user.email || "-";
+        setAppEnabled(true);
+      } else {
+        document.getElementById("userEmailLabel").textContent = "-";
+        setAppEnabled(false);
+      }
+    });
+
+    // =========================
+    // APP LOGIC (asli)
+    // =========================
+    let chart; let monitorPie; let monitorBar; let compChart;
+    let mesocycles = []; let planData = []; let weeklySessions = {};
+    let totalWkLocked = 0;
+
+    // ===== TES DATA =====
+    let testsData = [];
+    let testRadar;
+
+    const phColors = { "Umum": "#add8e699", "Khusus": "#90ee9099", "Pra-Komp": "#ffa50099", "Kompetisi": "#ef444499" };
+    const intColors = { "High": "#fee2e2", "Med": "#fef9c3", "Low": "#dcfce7", "Rest": "#f1f5f9" };
+
+    function showSection(id) {
+      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      const btnMap = { step1: "btn1", step2: "btn2", step3: "btn3", step4: "btn4", step5: "btn5" };
+      const btnId = btnMap[id];
+      if (btnId && document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+
+      if (id === 'step2') {
+        const name = (document.getElementById('planName')?.value || '').trim();
+        document.getElementById('displayTitle').innerText = name ? name : 'ANNUAL PLAN';
+      }
+
+      if(id === "step5"){
+        if(!window.__testsInitDone){
+          initTestsUI();
+          window.__testsInitDone = true;
+        } else {
+          renderTestsTable();
+          updateTestRadar();
+        }
+      }
+    }
+
+    function initPlan() {
+      const sVal = document.getElementById('start').value;
+      const mVal = document.getElementById('match').value;
+      if (!sVal || !mVal) return alert("Pilih tanggal!");
+
+      totalWkLocked = Math.ceil((new Date(mVal) - new Date(sVal)) / (1000 * 60 * 60 * 24 * 7));
+      if (totalWkLocked <= 0) return alert("Jadwal salah!");
+
+      mesocycles = [];
+      let rem = totalWkLocked; let c = 1;
+      while (rem > 0) {
+        let wk = rem >= 4 ? 4 : rem;
+        mesocycles.push({ name: "MESO " + c, weeks: wk });
+        rem -= wk; c++;
+      }
+
+      document.getElementById('displayTitle').innerText = document.getElementById('planName').value;
+      refreshUI(); showSection('step2');
+    }
+
+    function refreshUI() { renderMesoEditor(); recalculate(true); }
+
+    function renderMesoEditor() {
+      const container = document.getElementById('mesoEditorGrid'); container.innerHTML = "";
+      let used = 0;
+
+      mesocycles.forEach((m, i) => {
+        used += m.weeks;
+        const div = document.createElement('div');
+        div.style = "background:white; padding:10px; border-radius:10px; border:1px solid #cbd5e1; width:130px; display:flex; flex-direction:column; gap:5px; position:relative;";
+        div.innerHTML = `
+          <button type="button" onclick="removeMesoRow(${i})" style="position:absolute; right:5px; top:5px; border:none; background:none; cursor:pointer; color:red; font-weight:800;">×</button>
+          <input type="text" value="${m.name}" oninput="mesocycles[${i}].name=this.value; recalculate(false)" style="font-size:0.65rem; font-weight:800;">
+          <input type="number" value="${m.weeks}" min="1" onchange="mesocycles[${i}].weeks=parseInt(this.value || 1); refreshUI()" style="font-size:0.7rem;">
+        `;
+        container.appendChild(div);
+      });
+
+      const addBtn = document.createElement('button');
+      addBtn.type = "button";
+      addBtn.innerText = "+ MESO";
+      addBtn.onclick = () => { mesocycles.push({ name: "MESO " + (mesocycles.length + 1), weeks: 1 }); refreshUI(); };
+      addBtn.style = "width:130px; padding:10px; border-radius:10px; border:2px dashed #cbd5e1; background:white; cursor:pointer; font-weight:800; color:var(--accent)";
+      container.appendChild(addBtn);
+
+      const diff = totalWkLocked - used;
+      document.getElementById('lockInfo').innerHTML =
+        diff > 0 ? `⚠️ SISA ${diff} MINGGU` : (diff < 0 ? `❌ LEBIH ${Math.abs(diff)} Wk` : `✅ STRUKTUR PAS`);
+    }
+
+    function removeMesoRow(i) {
+      if (mesocycles.length > 1) { mesocycles.splice(i, 1); refreshUI(); }
+    }
+
+    function recalculate(fullRender = false) {
+      planData = []; let wkCount = 1;
+
+      mesocycles.forEach(m => {
+        for (let i = 1; i <= m.weeks; i++) {
+          if (wkCount > totalWkLocked) break;
+          const prog = wkCount / totalWkLocked;
+
+          let fase = prog <= 0.4 ? "Umum" : (prog <= 0.7 ? "Khusus" : (prog <= 0.9 ? "Pra-Komp" : "Kompetisi"));
+          let v = fase === "Umum" ? 90 : (fase === "Khusus" ? 75 : (fase === "Pra-Komp" ? 55 : 35));
+          let int = fase === "Umum" ? 30 : (fase === "Khusus" ? 60 : (fase === "Pra-Komp" ? 85 : 100));
+
+          if (i === m.weeks) { v -= 15; int -= 5; }
+          planData.push({ wk: wkCount, meso: m.name, fase, vol: v, int, c: phColors[fase] });
+          wkCount++;
+        }
+      });
+
+      if (fullRender) { renderTable(); populateMonthSelector(); }
+      updateVisuals();
+    }
+
+    function updateVolInt(idx, type, val) {
+      planData[idx][type] = parseFloat(val) || 0;
+
+      const tk = parseFloat(document.getElementById('tK').value) || 0;
+      const tv = parseFloat(document.getElementById('tV').value) || 0;
+      const td = parseFloat(document.getElementById('tD').value) || 0;
+      const tTek = parseFloat(document.getElementById('tTek').value) || 0;
+      const tTak = parseFloat(document.getElementById('tTak').value) || 0;
+
+      const row = document.getElementById(`row-${idx}`);
+      if (row) {
+        const v = planData[idx].vol;
+        row.querySelector('.res-k').innerText = (tk * v / 100).toFixed(0);
+        row.querySelector('.res-v').innerText = (tv * v / 100).toFixed(0);
+        row.querySelector('.res-d').innerText = (td * v / 100).toFixed(1);
+        row.querySelector('.res-tek').innerText = (tTek * v / 100).toFixed(0);
+        row.querySelector('.res-tak').innerText = (tTak * v / 100).toFixed(0);
+      }
+
+      updateVisuals();
+      renderMonthlyCalendar();
+    }
+
+    function renderTable() {
+      const tBody = document.getElementById('tableBody'); tBody.innerHTML = "";
+
+      const tk = parseFloat(document.getElementById('tK').value) || 0;
+      const tv = parseFloat(document.getElementById('tV').value) || 0;
+      const td = parseFloat(document.getElementById('tD').value) || 0;
+      const tTek = parseFloat(document.getElementById('tTek').value) || 0;
+      const tTak = parseFloat(document.getElementById('tTak').value) || 0;
+
+      planData.forEach((d, i) => {
+        const tr = document.createElement('tr'); tr.id = `row-${i}`;
+        tr.innerHTML = `
+          <td><b>W${d.wk}</b></td>
+          <td>${d.meso}</td>
+          <td style="background:${d.c}; font-weight:800">${d.fase}</td>
+          <td><input class="input-table" type="number" value="${d.vol}" oninput="updateVolInt(${i}, 'vol', this.value)"></td>
+          <td><input class="input-table" type="number" value="${d.int}" oninput="updateVolInt(${i}, 'int', this.value)"></td>
+          <td class="res-k">${(tk * d.vol / 100).toFixed(0)}</td>
+          <td class="res-v">${(tv * d.vol / 100).toFixed(0)}</td>
+          <td class="res-d">${(td * d.vol / 100).toFixed(1)}</td>
+          <td class="res-tek">${(tTek * d.vol / 100).toFixed(0)}</td>
+          <td class="res-tak">${(tTak * d.vol / 100).toFixed(0)}</td>
+        `;
+        tBody.appendChild(tr);
+      });
+    }
+
+    function updateVisuals() {
+      const strip = document.getElementById('mesoStrip'); strip.innerHTML = "";
+      let cur = 0;
+
+      mesocycles.forEach((m, idx) => {
+        let space = Math.min(m.weeks, totalWkLocked - cur);
+        if (space <= 0) return;
+        const b = document.createElement('div');
+        b.style.flex = space;
+        b.style.backgroundColor = idx % 2 === 0 ? '#1e293b' : '#475569';
+        b.style.color = 'white';
+        b.style.fontSize = '0.6rem';
+        b.style.display = 'flex';
+        b.style.alignItems = 'center';
+        b.style.justifyContent = 'center';
+        b.innerText = m.name;
+        strip.appendChild(b);
+        cur += space;
+      });
+
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      if (chart) chart.destroy();
+
+      const ann = [];
+      let sIdx = 0;
+      for (let i = 0; i < planData.length; i++) {
+        if (i === planData.length - 1 || planData[i].fase !== planData[i + 1].fase) {
+          ann.push({ type: 'box', drawTime: 'beforeDatasetsDraw', xMin: sIdx - 0.5, xMax: i + 0.5, backgroundColor: planData[i].c, borderWidth: 0 });
+          sIdx = i + 1;
+        }
+      }
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: planData.map(d => "W" + d.wk),
+          datasets: [
+            { label: 'Volume', data: planData.map(d => d.vol), borderColor: '#2563eb', borderWidth: 3, tension: 0.3 },
+            { label: 'Intensitas', data: planData.map(d => d.int), borderColor: '#ef4444', borderWidth: 3, tension: 0.3 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { annotation: { annotations: ann }, legend: { display: false } },
+          scales: { y: { position: 'right', min: 0, max: 140 }, x: { offset: true } }
+        }
+      });
+    }
+
+    function initMonitoring() {
+      showSection('step4');
+
+      let planCount = 0, realCount = 0, high = 0, rest = 0;
+      const monthRealVolumes = [];
+      const monthPlanVolumes = [];
+
+      let totalReal = { str: 0, spd: 0, end: 0, tek: 0, tak: 0 };
+
+      Object.values(weeklySessions).forEach(s => {
+        if (s.exercises && s.exercises.length > 0) planCount++;
+
+        if (s.isDone) {
+          realCount++;
+          s.exercises.forEach(ex => {
+            let st = parseFloat(ex.set) || 0;
+            let rp = parseFloat(ex.rep) || 1;
+            let ld = parseFloat(ex.load) || 0;
+            let cat = ex.cat || 'strength';
+
+            if (cat === 'strength')  totalReal.str += (st * rp * ld);
+            if (cat === 'speed')     totalReal.spd += (st * ld);
+            if (cat === 'endurance') totalReal.end += (st * ld);
+            if (cat === 'technique') totalReal.tek += (st * rp);
+            if (cat === 'tactic')    totalReal.tak += (st * rp);
+          });
+        }
+
+        if (s.int === 'High') high++;
+        if (s.int === 'Rest') rest++;
+      });
+
+      document.getElementById('total-str').innerHTML = `${Math.round(totalReal.str).toLocaleString('id-ID')} <small>kg</small>`;
+      document.getElementById('total-spd').innerHTML = `${Math.round(totalReal.spd).toLocaleString('id-ID')} <small>m</small>`;
+      document.getElementById('total-end').innerHTML = `${(Math.round(totalReal.end * 10) / 10).toLocaleString('id-ID')} <small>km</small>`;
+      document.getElementById('total-tek').innerHTML = `${Math.round(totalReal.tek).toLocaleString('id-ID')} <small>reps</small>`;
+      document.getElementById('total-tak').innerHTML = `${Math.round(totalReal.tak).toLocaleString('id-ID')} <small>reps</small>`;
+
+      document.getElementById('statWk').innerText = planData.length;
+      document.getElementById('statPlan').innerText = planCount;
+      document.getElementById('statReal').innerText = realCount;
+      const index = planCount > 0 ? Math.round((realCount / planCount) * 100) : 0;
+      document.getElementById('statIndex').innerText = index + "%";
+
+      calculateComponentStats();
+
+      const compCtx = document.getElementById('monitorComparisonChart').getContext('2d');
+      if (compChart) compChart.destroy();
+
+      const monthLabels = [];
+      for (let i = 0; i < Math.ceil(planData.length / 4); i++) {
+        monthLabels.push("Bulan " + (i + 1));
+        let planSum = 0, realSum = 0, count = 0;
+
+        for (let j = 0; j < 4; j++) {
+          const wkIdx = i * 4 + j;
+          if (planData[wkIdx]) {
+            planSum += planData[wkIdx].vol;
+            let wkDone = false;
+            ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].forEach(d => {
+              if (weeklySessions[`W${planData[wkIdx].wk}-${d}`]?.isDone) wkDone = true;
+            });
+            realSum += wkDone ? planData[wkIdx].vol : 0;
+            count++;
+          }
+        }
+        monthPlanVolumes.push(count ? (planSum / count) : 0);
+        monthRealVolumes.push(count ? (realSum / count) : 0);
+      }
+
+      compChart = new Chart(compCtx, {
+        type: 'bar',
+        data: {
+          labels: monthLabels,
+          datasets: [
+            { label: 'Target Plan (Volume Avg)', data: monthPlanVolumes, backgroundColor: '#cbd5e1' },
+            { label: 'Actual Realisasi (Volume Avg)', data: monthRealVolumes, backgroundColor: '#2563eb' }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 } } }
+      });
+
+      const pCtx = document.getElementById('monitorPieChart').getContext('2d');
+      if (monitorPie) monitorPie.destroy();
+      monitorPie = new Chart(pCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['High', 'Med', 'Low', 'Rest'],
+          datasets: [{ data: [high, 5, 5, rest], backgroundColor: ['#fee2e2', '#fef9c3', '#dcfce7', '#f1f5f9'] }]
+        },
+        options: { maintainAspectRatio: false }
+      });
+
+      const bCtx = document.getElementById('monitorBarChart').getContext('2d');
+      if (monitorBar) monitorBar.destroy();
+      monitorBar = new Chart(bCtx, {
+        type: 'line',
+        data: {
+          labels: monthLabels,
+          datasets: [{ label: 'Sesi Selesai', data: monthRealVolumes.map(v => (v / 100) * 28), borderColor: '#10b981', fill: true, backgroundColor: '#dcfce7' }]
+        },
+        options: { maintainAspectRatio: false }
+      });
+    }
+
+    function calculateComponentStats() {
+      const baseK = parseFloat(document.getElementById('tK').value) || 0;
+      const baseV = parseFloat(document.getElementById('tV').value) || 0;
+      const baseD = parseFloat(document.getElementById('tD').value) || 0;
+      const baseTek = parseFloat(document.getElementById('tTek').value) || 0;
+      const baseTak = parseFloat(document.getElementById('tTak').value) || 0;
+
+      let totals = {
+        k: { plan: 0, real: 0, unit: 'kg', label: 'Kekuatan' },
+        v: { plan: 0, real: 0, unit: 'm', label: 'Kecepatan' },
+        d: { plan: 0, real: 0, unit: 'km', label: 'Daya Tahan' },
+        tek: { plan: 0, real: 0, unit: 'rep', label: 'Teknik' },
+        tak: { plan: 0, real: 0, unit: 'rep', label: 'Taktik' }
+      };
+
+      planData.forEach(p => {
+        const wkVolPct = (p.vol || 0) / 100;
+
+        const wkTgt = {
+          k: baseK * wkVolPct,
+          v: baseV * wkVolPct,
+          d: baseD * wkVolPct,
+          tek: baseTek * wkVolPct,
+          tak: baseTak * wkVolPct
+        };
+
+        totals.k.plan += wkTgt.k; totals.v.plan += wkTgt.v; totals.d.plan += wkTgt.d; totals.tek.plan += wkTgt.tek; totals.tak.plan += wkTgt.tak;
+
+        let daysDone = 0;
+        const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+        days.forEach(day => {
+          const key = `W${p.wk}-${day}`;
+          if (weeklySessions[key] && weeklySessions[key].isDone) daysDone++;
+        });
+
+        const factor = daysDone / 7;
+
+        totals.k.real += wkTgt.k * factor;
+        totals.v.real += wkTgt.v * factor;
+        totals.d.real += wkTgt.d * factor;
+        totals.tek.real += wkTgt.tek * factor;
+        totals.tak.real += wkTgt.tak * factor;
+      });
+
+      const container = document.getElementById('componentStatsContainer');
+      container.innerHTML = "";
+
+      const createCard = (data) => {
+        const percent = data.plan > 0 ? Math.round((data.real / data.plan) * 100) : 0;
+        let color = percent < 50 ? '#ef4444' : (percent >= 80 ? '#10b981' : '#2563eb');
+
+        return `
+          <div class="comp-card">
+            <div class="comp-header">
+              <span class="comp-title">${data.label}</span>
+              <span class="comp-perc" style="color:${color}">${percent}%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width:${Math.min(percent, 100)}%; background:${color}"></div>
+            </div>
+            <div class="comp-detail">
+              <span>Target Terlaksana</span>
+              <span>${Math.round(data.real).toLocaleString('id-ID')} / ${Math.round(data.plan).toLocaleString('id-ID')} ${data.unit}</span>
+            </div>
+          </div>
+        `;
+      };
+
+      container.innerHTML += createCard(totals.k);
+      container.innerHTML += createCard(totals.v);
+      container.innerHTML += createCard(totals.d);
+      container.innerHTML += createCard(totals.tek);
+      container.innerHTML += createCard(totals.tak);
+    }
+
+    function populateMonthSelector() {
+      const sel = document.getElementById('monthViewSelector'); sel.innerHTML = "";
+      for (let i = 0; i < Math.ceil(planData.length / 4); i++) sel.innerHTML += `<option value="${i}">Bulan ${i + 1}</option>`;
+      renderMonthlyCalendar();
+    }
+
+    function renderMonthlyCalendar() {
+      const mIdx = parseInt(document.getElementById('monthViewSelector').value) || 0;
+      const grid = document.getElementById('monthGrid'); grid.innerHTML = "";
+      const sBase = new Date(document.getElementById('start').value);
+
+      const tk = parseFloat(document.getElementById('tK').value) || 0;
+      const tv = parseFloat(document.getElementById('tV').value) || 0;
+      const td = parseFloat(document.getElementById('tD').value) || 0;
+      const tTek = parseFloat(document.getElementById('tTek').value) || 0;
+      const tTak = parseFloat(document.getElementById('tTak').value) || 0;
+
+      for (let w = mIdx * 4; w < Math.min(mIdx * 4 + 4, planData.length); w++) {
+        const d = planData[w];
+        const row = document.createElement('div'); row.className = 'week-row';
+
+        const targetK = (tk * d.vol / 100).toFixed(0);
+        const targetV = (tv * d.vol / 100).toFixed(0);
+        const targetD = (td * d.vol / 100).toFixed(1);
+        const targetTek = (tTek * d.vol / 100).toFixed(0);
+        const targetTak = (tTak * d.vol / 100).toFixed(0);
+
+        row.innerHTML = `
+          <div style="background:#f8fafc; padding:12px; border-radius:12px; border-left:5px solid var(--accent); display:flex; flex-direction:column; justify-content:center">
+            <b style="font-size:0.85rem">W${d.wk} - ${d.fase}</b>
+            <div style="margin-top:8px; font-size:0.65rem; color:#475569; line-height:1.4">
+              <b style="color:var(--accent)">TARGET MINGGUAN:</b><br>
+              • Kekuatan: ${targetK}kg<br>
+              • Kecepatan: ${targetV}m<br>
+              • Daya Tahan: ${targetD}km<br>
+              • Teknik: ${targetTek} rep<br>
+              • Taktik: ${targetTak} rep
+            </div>
+          </div>
+        `;
+
+        for (let d_idx = 0; d_idx < 7; d_idx++) {
+          const dayDate = new Date(sBase); dayDate.setDate(sBase.getDate() + (w * 7) + d_idx);
+          const dayStr = dayDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+          const dayName = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"][d_idx];
+          const key = `W${d.wk}-${dayName}`;
+          const ses = weeklySessions[key] || { int: "Rest", exercises: [], isDone: false };
+          const doneDisplay = ses.isDone ? 'display:block' : 'display:none';
+
+          row.innerHTML += `
+            <div class="day-box" style="background-color:${intColors[ses.int]}" onclick="openModal('${key}','W${d.wk} ${dayName} (${dayStr})')">
+              <span class="day-date-label">${dayStr}</span>
+              <b style="font-size:0.75rem">${dayName}</b>
+              <div style="font-size:0.6rem; color:#64748b; margin-top:8px">${(ses.exercises && ses.exercises.length > 0) ? '✓ ' + ses.exercises.length + ' Menu' : ''}</div>
+              <div class="done-badge" style="${doneDisplay}">DONE</div>
+            </div>
+          `;
+        }
+
+        grid.appendChild(row);
+      }
+    }
+
+    let curKey = "";
+    function openModal(key, title) {
+      curKey = key;
+      document.getElementById('modalDayName').innerText = title;
+
+      const d = weeklySessions[key] || { int: "Rest", warmup: "", exercises: [], cooldown: "", recovery: "", isDone: false };
+
+      document.getElementById('dayIntSelect').value = d.int;
+      document.getElementById('isDone').checked = d.isDone || false;
+      document.getElementById('warmupInput').value = d.warmup || "";
+      document.getElementById('cooldownInput').value = d.cooldown || "";
+      document.getElementById('recoveryInput').value = d.recovery || "";
+
+      const b = document.getElementById('exerciseBody'); b.innerHTML = "";
+      if (!d.exercises || d.exercises.length === 0) addExerciseRow();
+      else d.exercises.forEach(ex => addExerciseRow(ex.name, ex.cat, ex.set, ex.rep, ex.load));
+
+      document.getElementById('sessionModal').style.display = 'flex';
+    }
+
+    function addExerciseRow(n = "", c = "strength", s = "", r = "", l = "") {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="en" value="${n}" placeholder="Nama Latihan"></td>
+        <td>
+          <select class="ecat">
+            <option value="strength" ${c === 'strength' ? 'selected' : ''}>Kuat (kg)</option>
+            <option value="speed" ${c === 'speed' ? 'selected' : ''}>Cepat (m)</option>
+            <option value="endurance" ${c === 'endurance' ? 'selected' : ''}>D.Tahan (km)</option>
+            <option value="technique" ${c === 'technique' ? 'selected' : ''}>Teknik (rep)</option>
+            <option value="tactic" ${c === 'tactic' ? 'selected' : ''}>Taktik (rep)</option>
+          </select>
+        </td>
+        <td><input type="number" class="es" value="${s}" placeholder="Set"></td>
+        <td><input type="number" class="er" value="${r}" placeholder="Rep"></td>
+        <td><input type="number" class="el" value="${l}" placeholder="Beban/Jarak"></td>
+        <td style="text-align:center">
+          <button type="button" onclick="this.parentElement.parentElement.remove()"
+            style="color:#ef4444; border:none; background:none; cursor:pointer; font-weight:900; font-size:18px; line-height:1">×</button>
+        </td>
+      `;
+      document.getElementById('exerciseBody').appendChild(tr);
+    }
+
+    function saveSession() {
+      const exs = [];
+      document.querySelectorAll('#exerciseBody tr').forEach(tr => {
+        const n = tr.querySelector('.en').value;
+        if (n) {
+          exs.push({
+            name: n,
+            cat: tr.querySelector('.ecat').value,
+            set: tr.querySelector('.es').value,
+            rep: tr.querySelector('.er').value,
+            load: tr.querySelector('.el').value
+          });
+        }
+      });
+
+      weeklySessions[curKey] = {
+        int: document.getElementById('dayIntSelect').value,
+        isDone: document.getElementById('isDone').checked,
+        warmup: document.getElementById('warmupInput').value,
+        exercises: exs,
+        cooldown: document.getElementById('cooldownInput').value,
+        recovery: document.getElementById('recoveryInput').value
+      };
+
+      closeModal(); renderMonthlyCalendar();
+    }
+
+    function closeModal() { document.getElementById('sessionModal').style.display = 'none'; }
+
+    function printPDF() {
+      const modal = document.getElementById('sessionModal');
+      if (modal) modal.style.display = 'none';
+      try {
+        if (chart) chart.resize();
+        if (compChart) compChart.resize();
+        if (monitorPie) monitorPie.resize();
+        if (monitorBar) monitorBar.resize();
+        if (testRadar) testRadar.resize();
+      } catch (e) {}
+      setTimeout(() => window.print(), 300);
+    }
+
+    // =========================
+    // TES & PENGUKURAN
+    // =========================
+    const TEST_CATALOG = {
+      "Strength": [
+        { key: "1RM", label: "1RM (pilih Squat/Bench/Deadlift)", needsVariant: true, needsMethod: true, unit: "kg" },
+        { key: "Pull-up", label: "Pull-up Max Reps", unit: "reps" },
+        { key: "IMTP", label: "Isometric Mid-Thigh Pull (Peak Force)", unit: "kg" }
+      ],
+      "Power": [
+        { key: "CMJ", label: "Countermovement Jump (CMJ)", unit: "cm" },
+        { key: "SJ", label: "Squat Jump (SJ)", unit: "cm" },
+        { key: "BroadJump", label: "Standing Broad Jump", unit: "m" },
+        { key: "MBThrow", label: "Medicine Ball Throw (Chest/Overhead)", unit: "m" }
+      ],
+      "Speed": [
+        { key: "Sprint10", label: "Sprint 10 m", unit: "s" },
+        { key: "Sprint20", label: "Sprint 20 m", unit: "s" },
+        { key: "Sprint30", label: "Sprint 30 m", unit: "s" }
+      ],
+      "Agility/COD": [
+        { key: "TTest", label: "T-Test", unit: "s" },
+        { key: "Illinois", label: "Illinois Agility", unit: "s" },
+        { key: "505", label: "505 COD", unit: "s" }
+      ],
+      "Endurance": [
+        { key: "Cooper", label: "Cooper 12-min (VO₂max estimate)", unit: "ml/kg/min" },
+        { key: "Beep", label: "Beep Test / MSFT (Level)", unit: "reps" },
+        { key: "FTP", label: "Cycling FTP", unit: "W" }
+      ],
+      "Mobility/Flexibility": [
+        { key: "SitReach", label: "Sit & Reach", unit: "cm" },
+        { key: "AnkleDF", label: "Ankle Dorsiflexion", unit: "cm" },
+        { key: "ShoulderMob", label: "Shoulder Mobility", unit: "cm" }
+      ],
+      "Balance/Stability": [
+        { key: "YBalance", label: "Y-Balance (Composite)", unit: "%" },
+        { key: "SingleLeg", label: "Single-Leg Stance (time)", unit: "s" }
+      ],
+      "Body Composition": [
+        { key: "Weight", label: "Body Weight", unit: "kg" },
+        { key: "BodyFat", label: "Body Fat %", unit: "%" },
+        { key: "FFM", label: "Fat Free Mass", unit: "kg" }
+      ]
+    };
+
+    // ===== NORMA (Skor 1–5) berbasis usia & jenis kelamin =====
+    function getAgeBand(age){
+      const a = parseInt(age);
+      if(!a || a < 13) return "U12";
+      if(a <= 15) return "13-15";
+      if(a <= 19) return "16-19";
+      if(a <= 29) return "20-29";
+      if(a <= 39) return "30-39";
+      if(a <= 49) return "40-49";
+      return "50+";
+    }
+
+    function scoreByThresholds(value, thresholds, mode="higherBetter"){
+      const v = parseFloat(value);
+      if(!isFinite(v)) return null;
+      const t = thresholds;
+
+      if(mode === "lowerBetter"){
+        if(v <= t[5]) return 5;
+        if(v <= t[4]) return 4;
+        if(v <= t[3]) return 3;
+        if(v <= t[2]) return 2;
+        return 1;
+      } else {
+        if(v >= t[5]) return 5;
+        if(v >= t[4]) return 4;
+        if(v >= t[3]) return 3;
+        if(v >= t[2]) return 2;
+        return 1;
+      }
+    }
+
+    // Norma umum (bisa Anda modifikasi sesuai populasi atlet Anda)
+    const NORMS = {
+      M: {
+        REL_1RM_SQUAT: {
+          "13-15": {2:0.9, 3:1.1, 4:1.3, 5:1.5},
+          "16-19": {2:1.0, 3:1.25,4:1.5, 5:1.75},
+          "20-29": {2:1.0, 3:1.3, 4:1.6, 5:1.9},
+          "30-39": {2:0.95,3:1.2, 4:1.45,5:1.75},
+          "40-49": {2:0.85,3:1.1, 4:1.35,5:1.6},
+          "50+":   {2:0.75,3:1.0, 4:1.2, 5:1.45},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        REL_1RM_BENCH: {
+          "13-15": {2:0.55,3:0.70,4:0.85,5:1.00},
+          "16-19": {2:0.65,3:0.85,4:1.00,5:1.15},
+          "20-29": {2:0.70,3:0.90,4:1.10,5:1.25},
+          "30-39": {2:0.65,3:0.85,4:1.05,5:1.20},
+          "40-49": {2:0.60,3:0.80,4:0.95,5:1.10},
+          "50+":   {2:0.50,3:0.70,4:0.85,5:1.00},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        REL_1RM_DEADLIFT: {
+          "13-15": {2:1.0, 3:1.2, 4:1.4, 5:1.6},
+          "16-19": {2:1.15,3:1.4, 4:1.65,5:1.9},
+          "20-29": {2:1.2, 3:1.5, 4:1.8, 5:2.1},
+          "30-39": {2:1.1, 3:1.4, 4:1.7, 5:2.0},
+          "40-49": {2:1.0, 3:1.25,4:1.55,5:1.85},
+          "50+":   {2:0.9, 3:1.15,4:1.4, 5:1.7},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        CMJ: {
+          "13-15": {2:28, 3:34, 4:40, 5:46},
+          "16-19": {2:32, 3:38, 4:45, 5:52},
+          "20-29": {2:33, 3:40, 4:48, 5:55},
+          "30-39": {2:30, 3:37, 4:44, 5:51},
+          "40-49": {2:26, 3:32, 4:39, 5:45},
+          "50+":   {2:22, 3:28, 4:34, 5:40},
+          "U12":   {2:18, 3:22, 4:26, 5:30}
+        },
+        SPRINT20: {
+          "13-15": {2:4.20,3:4.00,4:3.80,5:3.60},
+          "16-19": {2:4.05,3:3.85,4:3.65,5:3.45},
+          "20-29": {2:4.00,3:3.80,4:3.60,5:3.40},
+          "30-39": {2:4.10,3:3.90,4:3.70,5:3.50},
+          "40-49": {2:4.30,3:4.10,4:3.90,5:3.70},
+          "50+":   {2:4.55,3:4.30,4:4.05,5:3.85},
+          "U12":   {2:4.80,3:4.55,4:4.30,5:4.05}
+        },
+        VO2MAX: {
+          "13-15": {2:40, 3:46, 4:52, 5:58},
+          "16-19": {2:42, 3:48, 4:54, 5:60},
+          "20-29": {2:41, 3:47, 4:53, 5:59},
+          "30-39": {2:39, 3:45, 4:51, 5:57},
+          "40-49": {2:36, 3:42, 4:48, 5:54},
+          "50+":   {2:33, 3:38, 4:44, 5:50},
+          "U12":   {2:35, 3:40, 4:45, 5:50}
+        },
+        SITREACH: {
+          "13-15": {2:18, 3:24, 4:30, 5:36},
+          "16-19": {2:17, 3:23, 4:29, 5:35},
+          "20-29": {2:16, 3:22, 4:28, 5:34},
+          "30-39": {2:15, 3:21, 4:27, 5:33},
+          "40-49": {2:14, 3:20, 4:26, 5:32},
+          "50+":   {2:13, 3:19, 4:25, 5:31},
+          "U12":   {2:16, 3:20, 4:24, 5:28}
+        }
+      },
+      F: {
+        REL_1RM_SQUAT: {
+          "13-15": {2:0.7, 3:0.9, 4:1.1, 5:1.3},
+          "16-19": {2:0.8, 3:1.0, 4:1.2, 5:1.4},
+          "20-29": {2:0.8, 3:1.05,4:1.25,5:1.45},
+          "30-39": {2:0.75,3:1.0, 4:1.2, 5:1.4},
+          "40-49": {2:0.7, 3:0.9, 4:1.1, 5:1.3},
+          "50+":   {2:0.6, 3:0.8, 4:1.0, 5:1.2},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        REL_1RM_BENCH: {
+          "13-15": {2:0.35,3:0.45,4:0.55,5:0.65},
+          "16-19": {2:0.40,3:0.52,4:0.64,5:0.76},
+          "20-29": {2:0.42,3:0.55,4:0.70,5:0.85},
+          "30-39": {2:0.40,3:0.52,4:0.66,5:0.80},
+          "40-49": {2:0.37,3:0.48,4:0.60,5:0.72},
+          "50+":   {2:0.32,3:0.42,4:0.54,5:0.66},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        REL_1RM_DEADLIFT: {
+          "13-15": {2:0.85,3:1.05,4:1.25,5:1.45},
+          "16-19": {2:0.95,3:1.15,4:1.35,5:1.55},
+          "20-29": {2:1.0, 3:1.2, 4:1.45,5:1.7},
+          "30-39": {2:0.95,3:1.15,4:1.35,5:1.55},
+          "40-49": {2:0.85,3:1.05,4:1.25,5:1.45},
+          "50+":   {2:0.75,3:0.95,4:1.15,5:1.35},
+          "U12":   {2:0.0, 3:0.0, 4:0.0, 5:0.0}
+        },
+        CMJ: {
+          "13-15": {2:24, 3:30, 4:36, 5:42},
+          "16-19": {2:26, 3:32, 4:38, 5:44},
+          "20-29": {2:25, 3:31, 4:37, 5:43},
+          "30-39": {2:23, 3:29, 4:35, 5:41},
+          "40-49": {2:20, 3:26, 4:32, 5:38},
+          "50+":   {2:18, 3:23, 4:28, 5:34},
+          "U12":   {2:16, 3:20, 4:24, 5:28}
+        },
+        SPRINT20: {
+          "13-15": {2:4.60,3:4.35,4:4.10,5:3.85},
+          "16-19": {2:4.50,3:4.25,4:4.00,5:3.75},
+          "20-29": {2:4.50,3:4.25,4:4.00,5:3.75},
+          "30-39": {2:4.60,3:4.35,4:4.10,5:3.85},
+          "40-49": {2:4.80,3:4.55,4:4.30,5:4.05},
+          "50+":   {2:5.05,3:4.80,4:4.55,5:4.25},
+          "U12":   {2:5.20,3:4.95,4:4.70,5:4.40}
+        },
+        VO2MAX: {
+          "13-15": {2:34, 3:40, 4:46, 5:52},
+          "16-19": {2:36, 3:42, 4:48, 5:54},
+          "20-29": {2:35, 3:41, 4:47, 5:53},
+          "30-39": {2:33, 3:39, 4:45, 5:51},
+          "40-49": {2:30, 3:36, 4:42, 5:48},
+          "50+":   {2:28, 3:33, 4:39, 5:45},
+          "U12":   {2:30, 3:35, 4:40, 5:45}
+        },
+        SITREACH: {
+          "13-15": {2:22, 3:28, 4:34, 5:40},
+          "16-19": {2:21, 3:27, 4:33, 5:39},
+          "20-29": {2:20, 3:26, 4:32, 5:38},
+          "30-39": {2:19, 3:25, 4:31, 5:37},
+          "40-49": {2:18, 3:24, 4:30, 5:36},
+          "50+":   {2:17, 3:23, 4:29, 5:35},
+          "U12":   {2:18, 3:22, 4:26, 5:30}
+        }
+      }
+    };
+
+    function getNormKey(category, itemKey, variant){
+      if(category === "Power" && itemKey === "CMJ") return "CMJ";
+      if(category === "Speed" && itemKey === "Sprint20") return "SPRINT20";
+      if(category === "Endurance" && itemKey === "Cooper") return "VO2MAX";
+      if(category === "Mobility/Flexibility" && itemKey === "SitReach") return "SITREACH";
+
+      if(category === "Strength" && itemKey === "1RM"){
+        const v = (variant || "").toLowerCase();
+        if(v.includes("bench")) return "REL_1RM_BENCH";
+        if(v.includes("dead")) return "REL_1RM_DEADLIFT";
+        return "REL_1RM_SQUAT";
+      }
+      return null;
+    }
+
+    function computeAutoScore({category, itemKey, variant, value, age, sex, bw, e1rm}){
+      const s = (sex === "F") ? "F" : "M";
+      const band = getAgeBand(age);
+      const normKey = getNormKey(category, itemKey, variant);
+      if(!normKey) return null;
+
+      const sexNorms = NORMS[s] || {};
+      const byAge = sexNorms[normKey] || {};
+      const th = byAge[band] || null;
+      if(!th || !th[2]) return null;
+
+      if(normKey.startsWith("REL_1RM")){
+        const BW = parseFloat(bw);
+        if(!isFinite(BW) || BW <= 0) return null;
+
+        const oneRM = isFinite(parseFloat(e1rm)) ? parseFloat(e1rm) : parseFloat(value);
+        if(!isFinite(oneRM) || oneRM <= 0) return null;
+
+        const rel = oneRM / BW;
+        return scoreByThresholds(rel, th, "higherBetter");
+      }
+
+      if(normKey === "SPRINT20"){
+        return scoreByThresholds(value, th, "lowerBetter");
+      }
+
+      return scoreByThresholds(value, th, "higherBetter");
+    }
+
+    function initTestsUI(){
+      const catSel = document.getElementById("testCategory");
+      const itemSel = document.getElementById("testItem");
+
+      catSel.innerHTML = Object.keys(TEST_CATALOG)
+        .map(k => `<option value="${k}">${k}</option>`)
+        .join("");
+
+      function refreshItems(){
+        const cat = catSel.value;
+        const items = TEST_CATALOG[cat] || [];
+        itemSel.innerHTML = items.map((it) => `<option value="${it.key}">${it.label}</option>`).join("");
+        onTestItemChange();
+      }
+
+      function onTestItemChange(){
+        const cat = catSel.value;
+        const items = TEST_CATALOG[cat] || [];
+        const it = items.find(x => x.key === itemSel.value);
+
+        const variantWrap = document.getElementById("testVariantWrap");
+        const methodWrap  = document.getElementById("testMethodWrap");
+        const repsWrap    = document.getElementById("testRepsWrap");
+        const unitSel     = document.getElementById("testUnit");
+
+        variantWrap.style.display = (it && it.needsVariant) ? "block" : "none";
+        methodWrap.style.display  = (it && it.needsMethod)  ? "block" : "none";
+
+        const method = document.getElementById("testMethod").value;
+        repsWrap.style.display = (it && it.key === "1RM" && method === "estimated") ? "block" : "none";
+
+        if(it && it.unit) unitSel.value = it.unit;
+
+        computeTestPreview();
+      }
+
+      catSel.addEventListener("change", refreshItems);
+      itemSel.addEventListener("change", onTestItemChange);
+      document.getElementById("testMethod").addEventListener("change", onTestItemChange);
+
+      const radarSel = document.getElementById("radarAthleteFilter");
+      if(radarSel){
+        radarSel.addEventListener("change", ()=>updateTestRadar());
+      }
+
+      ["testValue","testReps","testScore","testBW","testAge","testSex","testVariant","testUnit","testDate","testAthlete","testNotes"]
+        .forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.addEventListener("input", ()=>computeTestPreview());
+          if(el && el.tagName === "SELECT") el.addEventListener("change", ()=>computeTestPreview());
+        });
+
+      refreshItems();
+      renderTestsTable();
+      updateTestRadar();
+    }
+
+    function computeTestPreview(){
+      const cat = document.getElementById("testCategory").value;
+      const item = document.getElementById("testItem").value;
+
+      const items = TEST_CATALOG[cat] || [];
+      const it = items.find(x => x.key === item);
+
+      const box = document.getElementById("testComputedBox");
+      if(!it){ box.style.display="none"; return; }
+
+      if(it.key === "1RM"){
+        const method = document.getElementById("testMethod").value;
+        const val = parseFloat(document.getElementById("testValue").value) || 0;
+        const reps = parseFloat(document.getElementById("testReps").value) || 0;
+        const bw = parseFloat(document.getElementById("testBW").value) || 0;
+
+        if(method === "estimated" && val > 0 && reps > 0){
+          const e1rm = val * (1 + (reps/30));
+          const rel = (bw > 0) ? (e1rm / bw) : null;
+
+          box.style.display = "block";
+          box.innerHTML = `
+            <div style="font-weight:900; color:var(--primary); margin-bottom:6px;">Estimasi 1RM (Epley)</div>
+            <div>e1RM: <b>${e1rm.toFixed(1)} kg</b></div>
+            <div>Relative Strength: <b>${rel ? rel.toFixed(2) + " xBW" : "-"}</b></div>
+            <div style="font-size:.7rem; color:#64748b; margin-top:6px;">Untuk norma 1RM, sistem memakai (1RM/BW). Isi BB agar skor otomatis aktif.</div>
+          `;
+          return;
+        }
+      }
+      box.style.display = "none";
+    }
+
+    function addTestRecord(){
+      const athlete = (document.getElementById("testAthlete").value || "").trim();
+      const date = document.getElementById("testDate").value;
+      if(!athlete){ alert("Nama atlet wajib diisi."); return; }
+      if(!date){ alert("Tanggal tes wajib diisi."); return; }
+
+      const cat = document.getElementById("testCategory").value;
+      const item = document.getElementById("testItem").value;
+      const items = TEST_CATALOG[cat] || [];
+      const it = items.find(x => x.key === item);
+
+      const val = parseFloat(document.getElementById("testValue").value);
+      if(!isFinite(val)){ alert("Nilai utama wajib angka."); return; }
+
+      const unit = document.getElementById("testUnit").value;
+      const manualScore = parseInt(document.getElementById("testScore").value) || 3;
+
+      const rec = {
+        id: "T" + Date.now(),
+        athlete,
+        date,
+        age: parseInt(document.getElementById("testAge").value) || null,
+        sex: document.getElementById("testSex").value || "M",
+        bw: parseFloat(document.getElementById("testBW").value) || null,
+
+        category: cat,
+        itemKey: item,
+        itemLabel: it ? it.label : item,
+
+        variant: (it && it.needsVariant) ? (document.getElementById("testVariant").value || null) : null,
+        method: (it && it.needsMethod) ? (document.getElementById("testMethod").value || null) : null,
+        reps: (it && item === "1RM" && document.getElementById("testMethod").value === "estimated")
+          ? (parseInt(document.getElementById("testReps").value) || null)
+          : null,
+
+        value: val,
+        unit,
+        score: manualScore,
+        score_source: "manual",
+        notes: (document.getElementById("testNotes").value || "").trim()
+      };
+
+      if(rec.itemKey === "1RM" && rec.method === "estimated" && rec.reps && rec.value){
+        const e1rm = rec.value * (1 + (rec.reps/30));
+        rec.e1rm = parseFloat(e1rm.toFixed(2));
+        if(rec.bw) rec.rel = parseFloat((e1rm / rec.bw).toFixed(3));
+      }
+
+      const auto = computeAutoScore({
+        category: rec.category,
+        itemKey: rec.itemKey,
+        variant: rec.variant,
+        value: rec.value,
+        age: rec.age,
+        sex: rec.sex,
+        bw: rec.bw,
+        e1rm: rec.e1rm
+      });
+
+      if(auto !== null){
+        rec.score = auto;
+        rec.score_source = "norm";
+      }
+
+      testsData.unshift(rec);
+      renderTestsTable();
+      updateTestRadar();
+      clearTestForm(false);
+
+      alert("Hasil tes tersimpan (akan ikut tersimpan saat klik 💾).");
+    }
+
+    function deleteTest(id){
+      testsData = (testsData || []).filter(x => x.id !== id);
+      renderTestsTable();
+      updateTestRadar();
+    }
+
+    function renderTestsTable(){
+      const body = document.getElementById("testsBody");
+      if(!body) return;
+
+      body.innerHTML = "";
+      (testsData || []).forEach(r=>{
+        const valText = (r.itemKey === "1RM" && r.e1rm) ? r.e1rm : r.value;
+        const unitText = (r.itemKey === "1RM") ? "kg" : (r.unit || "");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.date || "-"}</td>
+          <td style="text-align:left; font-weight:800">${r.athlete || "-"}</td>
+          <td>${r.category || "-"}</td>
+          <td style="text-align:left">${r.itemLabel || r.itemKey || "-"}</td>
+          <td>${r.variant || "-"}</td>
+          <td><b>${(isFinite(valText) ? valText : "-")}</b> ${unitText}</td>
+          <td>
+            <b>${r.score || "-"}</b><br>
+            <small style="color:#64748b; font-weight:800;">${r.score_source === "norm" ? "NORMA" : "MANUAL"}</small>
+          </td>
+          <td style="text-align:left">${r.notes || ""}</td>
+          <td>
+            <button type="button" onclick="deleteTest('${r.id}')"
+              style="color:#ef4444; border:none; background:none; cursor:pointer; font-weight:900; font-size:16px;">×</button>
+          </td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    function clearTestForm(clearAll=true){
+      if(clearAll){
+        document.getElementById("testAthlete").value = "";
+        document.getElementById("testAge").value = "";
+        document.getElementById("testBW").value = "";
+        document.getElementById("testNotes").value = "";
+      }
+      document.getElementById("testValue").value = "";
+      document.getElementById("testReps").value = "";
+      document.getElementById("testScore").value = "3";
+      computeTestPreview();
+    }
+
+    function refreshRadarAthleteFilter(){
+      const sel = document.getElementById("radarAthleteFilter");
+      if(!sel) return;
+
+      const athletes = Array.from(new Set((testsData || []).map(x => (x.athlete || "").trim()).filter(Boolean))).sort();
+      const current = sel.value;
+
+      sel.innerHTML = `<option value="__ALL__">Semua Atlet (gabungan)</option>` +
+        athletes.map(a => `<option value="${a}">${a}</option>`).join("");
+
+      if(current && athletes.includes(current)) sel.value = current;
+      else sel.value = "__ALL__";
+    }
+
+    function updateTestRadar(){
+      const canvas = document.getElementById("testRadarChart");
+      if(!canvas) return;
+
+      refreshRadarAthleteFilter();
+      const filterSel = document.getElementById("radarAthleteFilter");
+      const athleteFilter = filterSel ? filterSel.value : "__ALL__";
+
+      const data = (testsData || []).filter(r => {
+        if(athleteFilter === "__ALL__") return true;
+        return (r.athlete || "").trim() === athleteFilter;
+      });
+
+      const domains = ["Strength","Power","Speed","Agility","Endurance","Mobility","Balance","BodyComp"];
+      const latest = {};
+
+      const mapCatToDomain = (cat)=>{
+        if(cat === "Strength") return "Strength";
+        if(cat === "Power") return "Power";
+        if(cat === "Speed") return "Speed";
+        if(cat === "Agility/COD") return "Agility";
+        if(cat === "Endurance") return "Endurance";
+        if(cat === "Mobility/Flexibility") return "Mobility";
+        if(cat === "Balance/Stability") return "Balance";
+        if(cat === "Body Composition") return "BodyComp";
+        return null;
+      };
+
+      data.forEach(r=>{
+        const dom = mapCatToDomain(r.category);
+        if(!dom) return;
+        if(!latest[dom]) latest[dom] = r; // data sudah newest-first
+      });
+
+      const values = domains.map(d=>{
+        const r = latest[d];
+        return r ? (parseInt(r.score) || 0) : 0;
+      });
+
+      const ctx = canvas.getContext("2d");
+      if(testRadar) testRadar.destroy();
+
+      testRadar = new Chart(ctx, {
+        type: "radar",
+        data: {
+          labels: domains,
+          datasets: [{
+            label: athleteFilter === "__ALL__" ? "Skor 1–5 (Terbaru - Gabungan)" : `Skor 1–5 (Terbaru - ${athleteFilter})`,
+            data: values,
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: { min: 0, max: 5, ticks: { stepSize: 1 } }
+          }
+        }
+      });
+    }
+
+    // =========================
+    // SUPABASE: Save / Load (owner-only)
+    // =========================
+    async function requireSessionOrThrow(){
+      const { data, error } = await supabaseClient.auth.getSession();
+      if(error) throw error;
+      if(!data?.session) throw new Error("Anda belum login.");
+      return data.session;
+    }
+
+    async function saveAnnualPlan() {
+      let session;
+      try {
+        session = await requireSessionOrThrow();
+      } catch (e) {
+        alert(e.message || "Anda belum login.");
+        setAppEnabled(false);
+        return;
+      }
+
+      const userId = session.user.id;
+      const planName = document.getElementById("planName")?.value?.trim() || "Unnamed Plan";
+
+      const payload = {
+        config: {
+          name: planName,
+          start: document.getElementById('start')?.value || "",
+          match: document.getElementById('match')?.value || "",
+          tk: document.getElementById('tK')?.value || "",
+          tv: document.getElementById('tV')?.value || "",
+          td: document.getElementById('tD')?.value || "",
+          tTek: document.getElementById('tTek')?.value || "",
+          tTak: document.getElementById('tTak')?.value || ""
+        },
+        meso: mesocycles || [],
+        plan: planData || [],
+        sessions: weeklySessions || {},
+
+        // ✅ TES & PENGUKURAN ikut tersimpan
+        tests: testsData || [],
+
+        meta: { created_from: "web", timestamp: new Date().toISOString() }
+      };
+
+      const { data, error } = await supabaseClient
+        .from("hirocross_plans")
+        .insert([{ owner_id: userId, plan_name: planName, payload }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("GAGAL SIMPAN:", error);
+        alert("Gagal menyimpan: " + (error.message || "unknown"));
+        return;
+      }
+
+      console.log("BERHASIL SIMPAN:", data);
+      alert("Program berhasil disimpan ke database");
+    }
+
+    async function loadAnnualPlans() {
+      let session;
+      try {
+        session = await requireSessionOrThrow();
+      } catch (e) {
+        alert(e.message || "Anda belum login.");
+        setAppEnabled(false);
+        return;
+      }
+
+      const userId = session.user.id;
+
+      const { data, error } = await supabaseClient
+        .from("hirocross_plans")
+        .select("*")
+        .eq("owner_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      if (error) {
+        alert("Gagal mengambil data: " + (error.message || "unknown"));
+        console.error(error);
+        return;
+      }
+      if (!data || data.length === 0) {
+        alert("Belum ada data di database");
+        return;
+      }
+
+      const row = data[0];
+      const p = row.payload || {};
+
+      if (p.config) {
+        document.getElementById('planName').value = p.config.name || row.plan_name || "";
+        document.getElementById('start').value = p.config.start || "";
+        document.getElementById('match').value = p.config.match || "";
+        document.getElementById('tK').value = p.config.tk || "";
+        document.getElementById('tV').value = p.config.tv || "";
+        document.getElementById('tD').value = p.config.td || "";
+        if (p.config.tTek) document.getElementById('tTek').value = p.config.tTek;
+        if (p.config.tTak) document.getElementById('tTak').value = p.config.tTak;
+      } else {
+        document.getElementById('planName').value = row.plan_name || "";
+      }
+
+      mesocycles = p.meso || [];
+      planData = p.plan || [];
+      weeklySessions = p.sessions || {};
+      testsData = p.tests || [];
+
+      totalWkLocked = planData.length || 0;
+
+      renderMesoEditor();
+      renderTable();
+      populateMonthSelector();
+      updateVisuals();
+      renderMonthlyCalendar();
+
+      // Update tes UI jika sudah pernah dibuka
+      try{
+        renderTestsTable();
+        updateTestRadar();
+      } catch(e){}
+
+      alert("Data berhasil dimuat dari database");
+      showSection('step2');
+    }
+
+    // =========================
+    // EVENT BINDING (FIX UTAMA)
+    // =========================
+    function bindUI(){
+      // Auth buttons
+      document.getElementById("btnLogin").addEventListener("click", (e)=>{ e.preventDefault(); doLogin(); });
+      document.getElementById("btnSignUp").addEventListener("click", (e)=>{ e.preventDefault(); doSignUp(); });
+      document.getElementById("linkForgot").addEventListener("click", (e)=>{ e.preventDefault(); sendResetEmail(); });
+      document.getElementById("linkFill").addEventListener("click", (e)=>{ e.preventDefault(); fillDemoEmail(); });
+      document.getElementById("btnSaveNewPass").addEventListener("click", (e)=>{ e.preventDefault(); submitNewPassword(); });
+
+      // Allow press Enter to login
+      document.getElementById("loginPassword").addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){ e.preventDefault(); doLogin(); }
+      });
+
+      // Top nav
+      document.getElementById("btn1").addEventListener("click", ()=>showSection("step1"));
+      document.getElementById("btn2").addEventListener("click", ()=>showSection("step2"));
+      document.getElementById("btn3").addEventListener("click", ()=>showSection("step3"));
+      document.getElementById("btn4").addEventListener("click", ()=>initMonitoring());
+      document.getElementById("btn5").addEventListener("click", ()=>showSection("step5"));
+
+      // Logout
+      document.getElementById("btnLogout").addEventListener("click", ()=>doLogout());
+
+      // Generate plan
+      document.getElementById("btnGeneratePlan").addEventListener("click", ()=>initPlan());
+
+      // Monthly selector
+      document.getElementById("monthViewSelector").addEventListener("change", ()=>renderMonthlyCalendar());
+
+      // Dock
+      document.getElementById("btnSaveDb").addEventListener("click", ()=>saveAnnualPlan());
+      document.getElementById("btnLoadDb").addEventListener("click", ()=>loadAnnualPlans());
+      document.getElementById("btnPrint").addEventListener("click", ()=>printPDF());
+
+      // Import
+      document.getElementById("fInput").addEventListener("change", (e)=>importData(e));
+
+      // Modal buttons
+      document.getElementById("btnAddExercise").addEventListener("click", ()=>addExerciseRow());
+      document.getElementById("btnSaveSession").addEventListener("click", ()=>saveSession());
+      document.getElementById("btnCloseModal").addEventListener("click", ()=>closeModal());
+
+      // Tes buttons
+      document.getElementById("btnAddTest").addEventListener("click", ()=>addTestRecord());
+      document.getElementById("btnClearTests").addEventListener("click", ()=>clearTestForm(true));
+    }
+
+    function importData(e) {
+      const file = e?.target?.files?.[0];
+      if(!file) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        const d = JSON.parse(ev.target.result);
+
+        document.getElementById('planName').value = d.config.name;
+        document.getElementById('start').value = d.config.start;
+        document.getElementById('match').value = d.config.match;
+        document.getElementById('tK').value = d.config.tk;
+        document.getElementById('tV').value = d.config.tv;
+        document.getElementById('tD').value = d.config.td;
+        if (d.config.tTek) document.getElementById('tTek').value = d.config.tTek;
+        if (d.config.tTak) document.getElementById('tTak').value = d.config.tTak;
+
+        mesocycles = d.meso || [];
+        weeklySessions = d.sessions || {};
+        testsData = d.tests || [];
+        totalWkLocked = (d.plan && d.plan.length) ? d.plan.length : 0;
+
+        refreshUI();
+        try{
+          renderTestsTable();
+          updateTestRadar();
+        } catch(e){}
+
+        showSection('step2');
+      };
+      r.readAsText(file);
+    }
+
+    // Export functions to window (cadangan kalau ada elemen yang masih pakai onclick internal)
+    window.doLogin = doLogin;
+    window.doSignUp = doSignUp;
+    window.doLogout = doLogout;
+    window.sendResetEmail = sendResetEmail;
+    window.fillDemoEmail = fillDemoEmail;
+    window.submitNewPassword = submitNewPassword;
+
+    window.showSection = showSection;
+    window.initPlan = initPlan;
+    window.initMonitoring = initMonitoring;
+    window.removeMesoRow = removeMesoRow;
+    window.recalculate = recalculate;
+    window.updateVolInt = updateVolInt;
+    window.openModal = openModal;
+    window.addExerciseRow = addExerciseRow;
+    window.saveSession = saveSession;
+    window.closeModal = closeModal;
+    window.saveAnnualPlan = saveAnnualPlan;
+    window.loadAnnualPlans = loadAnnualPlans;
+    window.printPDF = printPDF;
+
+    window.deleteTest = deleteTest;
+
+    // Boot
+    document.addEventListener("DOMContentLoaded", async () => {
+      bindUI();
+      await bootAuth();
+    });
+  </script>
+
+</body>
+</html>
