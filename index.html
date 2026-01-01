@@ -2004,55 +2004,67 @@
       return data.session;
     }
 
-    async function saveAnnualPlan() {
-      let session;
-      try {
-        session = await requireSessionOrThrow();
-      } catch (e) {
-        alert(e.message || "Anda belum login.");
-        setAppEnabled(false);
-        return;
-      }
+   async function saveAnnualPlan() {
+  let session;
+  try {
+    session = await requireSessionOrThrow();
+  } catch (e) {
+    alert(e.message || "Anda belum login.");
+    setAppEnabled(false);
+    return;
+  }
 
-      const userId = session.user.id;
-      const planName = document.getElementById("planName")?.value?.trim() || "Unnamed Plan";
+  const userId = session.user.id;
+  const planName = document.getElementById("planName")?.value?.trim() || "Unnamed Plan";
 
-      const payload = {
-        config: {
-          name: planName,
-          start: document.getElementById('start')?.value || "",
-          match: document.getElementById('match')?.value || "",
-          tk: document.getElementById('tK')?.value || "",
-          tv: document.getElementById('tV')?.value || "",
-          td: document.getElementById('tD')?.value || "",
-          tTek: document.getElementById('tTek')?.value || "",
-          tTak: document.getElementById('tTak')?.value || ""
-        },
-        meso: mesocycles || [],
-        plan: planData || [],
-        sessions: weeklySessions || {},
+  // ===== TAG IDENTITAS PROGRAM (FINAL & STABIL) =====
+  const tags = {
+    athlete: document.getElementById("tagAthlete")?.value || "",
+    team:    document.getElementById("tagTeam")?.value || "",
+    year:    document.getElementById("tagYear")?.value || "",
+    sport:   document.getElementById("tagSport")?.value || ""
+  };
 
-        // ✅ TES & PENGUKURAN ikut tersimpan
-        tests: testsData || [],
+  const payload = {
+    config: {
+      name: planName,
+      start: document.getElementById('start')?.value || "",
+      match: document.getElementById('match')?.value || "",
+      tk: document.getElementById('tK')?.value || "",
+      tv: document.getElementById('tV')?.value || "",
+      td: document.getElementById('tD')?.value || "",
+      tTek: document.getElementById('tTek')?.value || "",
+      tTak: document.getElementById('tTak')?.value || ""
+    },
 
-        meta: { created_from: "web", timestamp: new Date().toISOString() }
-      };
+    meso: mesocycles || [],
+    plan: planData || [],
+    sessions: weeklySessions || {},
+    tests: testsData || [],
 
-      const { data, error } = await supabaseClient
-        .from("hirocross_plans")
-        .insert([{ owner_id: userId, plan_name: planName, payload }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error("GAGAL SIMPAN:", error);
-        alert("Gagal menyimpan: " + (error.message || "unknown"));
-        return;
-      }
-
-      console.log("BERHASIL SIMPAN:", data);
-      alert("Program berhasil disimpan ke database");
+    // ⬇⬇⬇ INI KUNCI UTAMA ⬇⬇⬇
+    meta: {
+      created_from: "web",
+      timestamp: new Date().toISOString(),
+      tags: tags
     }
+  };
+
+  const { data, error } = await supabaseClient
+    .from("hirocross_plans")
+    .insert([{ owner_id: userId, plan_name: planName, payload }])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("GAGAL SIMPAN:", error);
+    alert("Gagal menyimpan: " + (error.message || "unknown"));
+    return;
+  }
+
+  alert("Program berhasil disimpan ke database");
+}
+}
 
     async function loadAnnualPlans() {
       let session;
@@ -2461,5 +2473,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
