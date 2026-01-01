@@ -369,17 +369,6 @@
           <div><label>Daya Tahan (km)</label><input type="number" id="tD" value="10"></div>
           <div><label>Teknik (rep)</label><input type="number" id="tTek" value="500"></div>
           <div><label>Taktik (rep)</label><input type="number" id="tTak" value="200"></div>
-          <div style="grid-column: span 2;">
-  <label>Kompetisi (Multi)</label>
-  <div style="display:flex; gap:8px;">
-    <input id="compName" type="text" placeholder="Nama Kompetisi">
-    <input id="compDate" type="date">
-    <button type="button" onclick="addCompetition()"
-      style="font-weight:900; padding:10px">+</button>
-  </div>
-  <div id="compList" style="margin-top:8px; font-size:.7rem; font-weight:800"></div>
-</div>
-
         </div>
         <button id="btnGeneratePlan"
           type="button"
@@ -924,8 +913,6 @@
     let chart; let monitorPie; let monitorBar; let compChart;
     let mesocycles = []; let planData = []; let weeklySessions = {};
     let totalWkLocked = 0;
-    let competitions = []; // MULTI KOMPETISI
-
 
     // ===== TES DATA =====
     let testsData = [];
@@ -1008,34 +995,6 @@
       document.getElementById('lockInfo').innerHTML =
         diff > 0 ? `⚠️ SISA ${diff} MINGGU` : (diff < 0 ? `❌ LEBIH ${Math.abs(diff)} Wk` : `✅ STRUKTUR PAS`);
     }
-
-    function addCompetition(){
-  const n = document.getElementById("compName").value.trim();
-  const d = document.getElementById("compDate").value;
-  if(!n || !d) return;
-
-  competitions.push({
-    id: "C" + Date.now(),
-    name: n,
-    date: d,
-    priority: competitions.length === 0 ? "main" : "minor"
-  });
-
-  document.getElementById("compName").value = "";
-  document.getElementById("compDate").value = "";
-
-  renderCompetitions();
-  updateVisuals();
-}
-
-function renderCompetitions(){
-  const box = document.getElementById("compList");
-  if(!box) return;
-  box.innerHTML = competitions.map(c =>
-    `🏆 <span style="color:${c.priority==="main"?"#dc2626":"#f59e0b"}">
-      ${c.name}</span> (${c.date})`
-  ).join("<br>");
-}
 
     function removeMesoRow(i) {
       if (mesocycles.length > 1) { mesocycles.splice(i, 1); refreshUI(); }
@@ -1137,22 +1096,6 @@ function renderCompetitions(){
       if (chart) chart.destroy();
 
       const ann = [];
-      const startDate = new Date(document.getElementById("start").value);
-
-(competitions || []).forEach(c=>{
-  const w = Math.round((new Date(c.date) - startDate) / (7 * 86400000));
-  if(isFinite(w)){
-    ann.push({
-      type: "line",
-      xMin: w,
-      xMax: w,
-      borderColor: c.priority === "main" ? "#dc2626" : "#f59e0b",
-      borderWidth: 3,
-      label: { display: true, content: c.name }
-    });
-  }
-});
-
       let sIdx = 0;
       for (let i = 0; i < planData.length; i++) {
         if (i === planData.length - 1 || planData[i].fase !== planData[i + 1].fase) {
@@ -2098,8 +2041,6 @@ function renderCompetitions(){
     plan: planData || [],
     sessions: weeklySessions || {},
     tests: testsData || [],
-    competitions: competitions || [],
-
 
     // ⬇⬇⬇ INI KUNCI UTAMA ⬇⬇⬇
     meta: {
@@ -2174,20 +2115,6 @@ function renderCompetitions(){
       planData = p.plan || [];
       weeklySessions = p.sessions || {};
       testsData = p.tests || [];
-      if(p.competitions){
-  competitions = p.competitions;
-} else if(p.config?.match){
-  competitions = [{
-    id: "legacy",
-    name: "Target Utama",
-    date: p.config.match,
-    priority: "main"
-  }];
-} else {
-  competitions = [];
-}
-renderCompetitions();
-
 
       totalWkLocked = planData.length || 0;
 
@@ -2546,3 +2473,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
