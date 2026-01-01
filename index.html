@@ -2409,28 +2409,57 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnCancelPlanPicker")
     ?.addEventListener("click", closePlanPicker);
 });
+<script>
+/* =========================================================
+   SAFE TAG SAVE PATCH (NO DATE OVERRIDE)
+   FIXED – PRODUCTION SAFE
+========================================================= */
+(function(){
+  const originalSave = window.saveAnnualPlan;
 
-/* --------- SAVE TAG INJECTION (SAFE WRAP) --------- */
-const __HIRO_SAVE__ = window.saveAnnualPlan;
+  window.saveAnnualPlan = async function(){
 
-window.saveAnnualPlan = async function(){
-  const athlete = tagAthlete?.value || "";
-  const team    = tagTeam?.value || "";
-  const year    = tagYear?.value || "";
-  const sport   = tagSport?.value || "";
+    const athlete = document.getElementById("tagAthlete")?.value || "";
+    const team    = document.getElementById("tagTeam")?.value || "";
+    const year    = document.getElementById("tagYear")?.value || "";
+    const sport   = document.getElementById("tagSport")?.value || "";
 
-  const _Date = Date;
-  Date = function(...args){
-    const d = args.length ? new _Date(...args) : new _Date();
-    d.__HIROCROSS_TAGS__ = { athlete, team, year, sport };
-    return d;
+    // Patch supabase.from secara TEMPORARY
+    const originalFrom = supabaseClient.from.bind(supabaseClient);
+
+    supabaseClient.from = function(table){
+      const q = originalFrom(table);
+
+      if(table === "hirocross_plans"){
+        const originalInsert = q.insert.bind(q);
+
+        q.insert = function(rows){
+          if(Array.isArray(rows) && rows[0]?.payload){
+            rows[0].payload.meta = rows[0].payload.meta || {};
+            rows[0].payload.meta.tags = {
+              athlete,
+              team,
+              year,
+              sport
+            };
+          }
+          return originalInsert(rows);
+        };
+      }
+      return q;
+    };
+
+    try {
+      await originalSave();
+    } finally {
+      // RESTORE supabase.from (WAJIB)
+      supabaseClient.from = originalFrom;
+    }
   };
-
-  await __HIRO_SAVE__();
-  Date = _Date;
-};
+})();
 </script>
 
 </body>
 </html>
+
 
