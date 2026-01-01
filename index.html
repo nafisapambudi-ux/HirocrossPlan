@@ -2234,6 +2234,203 @@
       await bootAuth();
     });
   </script>
+<!-- =========================================================
+     HIROCROSS MULTI-PLAN + TAG ADD-ON
+     (SAFE | ADDITIVE | NO CORE CODE MODIFIED)
+========================================================= -->
+
+<!-- ========== TAG PLAN UI ========== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const step1 = document.getElementById("step1");
+  if(!step1) return;
+
+  const tagCard = document.createElement("div");
+  tagCard.className = "card";
+  tagCard.innerHTML = `
+    <h3 style="margin-bottom:15px">Identitas Program</h3>
+    <div class="grid">
+      <div>
+        <label>Atlet</label>
+        <input id="tagAthlete" type="text" placeholder="Contoh: Atlet A">
+      </div>
+      <div>
+        <label>Tim</label>
+        <input id="tagTeam" type="text" placeholder="Contoh: Puslatda Jatim">
+      </div>
+      <div>
+        <label>Tahun</label>
+        <input id="tagYear" type="number" placeholder="2026">
+      </div>
+      <div>
+        <label>Cabang Olahraga</label>
+        <input id="tagSport" type="text" placeholder="Contoh: Sepeda / Sepak Bola">
+      </div>
+    </div>
+  `;
+  step1.appendChild(tagCard);
+});
+</script>
+
+<!-- ========== PLAN PICKER MODAL ========== -->
+<div id="planPickerModal" class="modal">
+  <div class="modal-content">
+    <h3 style="margin-bottom:15px">Pilih Annual Plan</h3>
+
+    <select id="planPickerSelect"
+      style="width:100%; padding:12px; font-weight:800; margin-bottom:15px">
+    </select>
+
+    <div style="display:flex; gap:10px;">
+      <button id="btnLoadSelectedPlan"
+        style="flex:2; background:var(--primary); color:white;
+               padding:12px; border:none; border-radius:10px; font-weight:800">
+        MUAT PLAN
+      </button>
+      <button id="btnCancelPlanPicker"
+        style="flex:1; background:#64748b; color:white;
+               padding:12px; border:none; border-radius:10px; font-weight:800">
+        BATAL
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MULTI PLAN + TAG LOGIC ========== -->
+<script>
+/* =========================================================
+   MULTI PLAN + TAG ENGINE
+========================================================= */
+
+let __HIROCROSS_PLAN_CACHE__ = [];
+
+/* --------- PLAN PICKER OPEN --------- */
+async function openPlanPicker(){
+  const { data } = await supabaseClient.auth.getSession();
+  if(!data?.session){
+    alert("Anda belum login");
+    return;
+  }
+
+  const userId = data.session.user.id;
+
+  const { data: plans, error } = await supabaseClient
+    .from("hirocross_plans")
+    .select("id, plan_name, payload, created_at")
+    .eq("owner_id", userId)
+    .order("created_at", { ascending: false });
+
+  if(error || !plans || plans.length === 0){
+    alert("Belum ada plan tersimpan");
+    return;
+  }
+
+  __HIROCROSS_PLAN_CACHE__ = plans;
+
+  const sel = document.getElementById("planPickerSelect");
+  sel.innerHTML = plans.map(p => {
+    const t = p.payload?.meta?.tags || {};
+    return `
+      <option value="${p.id}">
+        ${p.plan_name}
+        | ${t.athlete || "-"}
+        | ${t.team || "-"}
+        | ${t.sport || "-"}
+        | ${t.year || "-"}
+      </option>
+    `;
+  }).join("");
+
+  document.getElementById("planPickerModal").style.display = "flex";
+}
+
+/* --------- LOAD SELECTED PLAN --------- */
+async function loadSelectedPlan(){
+  const id = document.getElementById("planPickerSelect").value;
+  const row = __HIROCROSS_PLAN_CACHE__.find(p => p.id === id);
+  if(!row) return;
+
+  const p = row.payload || {};
+
+  /* === LOAD CORE PLAN (COPY SAFE) === */
+  if (p.config) {
+    planName.value = p.config.name || "";
+    start.value = p.config.start || "";
+    match.value = p.config.match || "";
+    tK.value = p.config.tk || "";
+    tV.value = p.config.tv || "";
+    tD.value = p.config.td || "";
+    if (p.config.tTek) tTek.value = p.config.tTek;
+    if (p.config.tTak) tTak.value = p.config.tTak;
+  }
+
+  mesocycles = p.meso || [];
+  planData = p.plan || [];
+  weeklySessions = p.sessions || {};
+  testsData = p.tests || [];
+  totalWkLocked = planData.length || 0;
+
+  renderMesoEditor();
+  renderTable();
+  populateMonthSelector();
+  updateVisuals();
+  renderMonthlyCalendar();
+
+  try{
+    renderTestsTable();
+    updateTestRadar();
+  }catch(e){}
+
+  /* === LOAD TAG === */
+  const tags = p.meta?.tags || {};
+  tagAthlete.value = tags.athlete || "";
+  tagTeam.value    = tags.team || "";
+  tagYear.value    = tags.year || "";
+  tagSport.value   = tags.sport || "";
+
+  closePlanPicker();
+  alert("Plan berhasil dimuat");
+  showSection("step2");
+}
+
+/* --------- CLOSE PICKER --------- */
+function closePlanPicker(){
+  document.getElementById("planPickerModal").style.display = "none";
+}
+
+/* --------- BUTTON HOOK --------- */
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("btnLoadDb")
+    ?.addEventListener("click", openPlanPicker);
+
+  document.getElementById("btnLoadSelectedPlan")
+    ?.addEventListener("click", loadSelectedPlan);
+
+  document.getElementById("btnCancelPlanPicker")
+    ?.addEventListener("click", closePlanPicker);
+});
+
+/* --------- SAVE TAG INJECTION (SAFE WRAP) --------- */
+const __HIRO_SAVE__ = window.saveAnnualPlan;
+
+window.saveAnnualPlan = async function(){
+  const athlete = tagAthlete?.value || "";
+  const team    = tagTeam?.value || "";
+  const year    = tagYear?.value || "";
+  const sport   = tagSport?.value || "";
+
+  const _Date = Date;
+  Date = function(...args){
+    const d = args.length ? new _Date(...args) : new _Date();
+    d.__HIROCROSS_TAGS__ = { athlete, team, year, sport };
+    return d;
+  };
+
+  await __HIRO_SAVE__();
+  Date = _Date;
+};
+</script>
 
 </body>
 </html>
+
